@@ -274,52 +274,6 @@
       box-shadow: 0 0 8px rgba(8, 218, 146, 0.9);
     }
 
-    .lang-selector {
-      display: inline-flex;
-      border-radius: 999px;
-      overflow: hidden;
-      border: 1px solid var(--border-subtle);
-      background: rgba(5, 5, 12, 0.92);
-      margin-right: 4px;
-    }
-
-    .lang-btn {
-      border: none;
-      background: transparent;
-      color: var(--text-soft);
-      font-size: 11px;
-      padding: 5px 8px;
-      cursor: pointer;
-    }
-
-    .lang-btn.active {
-      background: rgba(216, 177, 90, 0.16);
-      color: var(--accent-soft);
-    }
-
-    .voice-selector {
-      display: inline-flex;
-      border-radius: 999px;
-      overflow: hidden;
-      border: 1px solid var(--border-subtle);
-      background: rgba(5, 5, 12, 0.92);
-      margin-right: 4px;
-    }
-
-    .voice-btn {
-      border: none;
-      background: transparent;
-      color: var(--text-soft);
-      font-size: 11px;
-      padding: 5px 8px;
-      cursor: pointer;
-    }
-
-    .voice-btn.active {
-      background: rgba(216, 177, 90, 0.16);
-      color: var(--accent-soft);
-    }
-
     .tts-toggle {
       border-radius: 999px;
       border: 1px solid var(--border-subtle);
@@ -335,7 +289,7 @@
       transition:
         transform 0.08s ease-out,
         box-shadow 0.08s ease-out,
-        background 0.08sease-out,
+        background 0.08s ease-out,
         border-color 0.08s ease-out;
     }
 
@@ -407,6 +361,11 @@
       text-transform: uppercase;
       color: var(--accent-soft);
       opacity: 0.95;
+    }
+
+    .bubble-ai a {
+      color: var(--accent-soft);
+      text-decoration: underline;
     }
 
     /* Starters / iniciadores — arriba del chat */
@@ -631,7 +590,7 @@
             Sesión guiada en tiempo real
           </div>
           <div class="badge">
-            10 interacciones demo
+            14 interacciones demo
           </div>
           <div class="badge">
             Enfoque: comunicación + liderazgo
@@ -675,16 +634,6 @@
             </div>
           </div>
           <div class="chat-header-right">
-            <div id="langSelector" class="lang-selector">
-              <button data-lang="es" class="lang-btn active">ES</button>
-              <button data-lang="en" class="lang-btn">EN</button>
-            </div>
-
-            <div id="voiceSelector" class="voice-selector">
-              <button data-gender="f" class="voice-btn active">Voz F</button>
-              <button data-gender="m" class="voice-btn">Voz M</button>
-            </div>
-
             <button
               id="ttsToggleBtn"
               class="tts-toggle on"
@@ -700,7 +649,7 @@
           </div>
         </div>
 
-        <!-- Iniciadores de conversación ARRIBA del chat -->
+        <!-- Iniciadores de conversación ARRIBA del chat (para después del onboarding) -->
         <div class="starters">
           <button class="starter-btn">Quiero comunicarme mejor con mi equipo sin tanta fricción.</button>
           <button class="starter-btn">Siento que no proyecto la autoridad que debería.</button>
@@ -709,9 +658,9 @@
         </div>
 
         <div id="chatBox" class="chat-box">
-          <!-- Primera pregunta: pide el nombre -->
+          <!-- Pregunta 1: idioma -->
           <div class="bubble-ai">
-            Antes de entrar a tu demo, dime, ¿cómo te llamas?
+            Antes de entrar a tu demo, dime: ¿en qué idioma quieres interactuar? Escribe "español" o "inglés".
           </div>
         </div>
 
@@ -720,7 +669,7 @@
             id="userMsg"
             type="text"
             autocomplete="off"
-            placeholder="Escribe tu nombre para comenzar…"
+            placeholder="Escribe: español o inglés…"
           />
           <button id="voiceBtn" type="button" title="Hablar con Esteborg">
             🎤
@@ -741,8 +690,10 @@
     let history = [];
     let isSending = false;
     let demoEnded = false;
-    let hasName = false;
     let userName = null;
+
+    // 1 = idioma, 2 = voz, 3 = nombre, 4 = conversación normal
+    let introStep = 1;
 
     // Idioma de experiencia (voz / modelo)
     let currentLang = "es"; // "es" o "en"
@@ -780,6 +731,43 @@ Te recomiendo elegir según tu objetivo actual:
 💎 O el bundle completo, con ambos entrenamientos y una sesión personalizada con Esteban.
 
 ¿Quieres que te ayude a decidir cuál de estos tres caminos se adapta mejor a tu situación actual?`;
+
+    // ====== helpers ======
+    function formatTextWithLinks(text) {
+      if (!text) return "";
+      const urlRegex = /(https?:\/\/[^\s]+)/g;
+      return text.replace(
+        urlRegex,
+        '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>'
+      );
+    }
+
+    function detectLangChoice(message) {
+      const t = message.toLowerCase();
+      if (t.includes("english") || t.includes("inglés") || t.includes("ingles") || t === "en") {
+        return "en";
+      }
+      if (t.includes("español") || t.includes("espanol") || t === "es") {
+        return "es";
+      }
+      // default español
+      return "es";
+    }
+
+    function detectVoiceGenderChoice(message) {
+      const t = message.toLowerCase();
+      if (
+        t.includes("masculina") ||
+        t.includes("hombre") ||
+        t.includes("masculino") ||
+        t.includes("male") ||
+        t.includes("man")
+      ) {
+        return "m";
+      }
+      // default femenina
+      return "f";
+    }
 
     // ====== GESTIÓN DE VOCES (TTS) ======
     function loadVoices() {
@@ -904,8 +892,6 @@ Te recomiendo elegir según tu objetivo actual:
       if (!synth) {
         ttsBtn.style.display = "none";
         ttsEnabled = false;
-        const vs = document.getElementById("voiceSelector");
-        if (vs) vs.style.display = "none";
         return;
       }
 
@@ -929,34 +915,18 @@ Te recomiendo elegir según tu objetivo actual:
       });
     }
 
-    function setupVoiceSelector() {
-      const container = document.getElementById("voiceSelector");
-      if (!container) return;
-
-      if (!synth) {
-        container.style.display = "none";
-        return;
-      }
-
-      const btns = container.querySelectorAll(".voice-btn");
-      btns.forEach((btn) => {
-        btn.addEventListener("click", () => {
-          const gender = btn.getAttribute("data-gender");
-          currentVoiceGender = gender === "m" ? "m" : "f";
-
-          btns.forEach((b) => b.classList.remove("active"));
-          btn.classList.add("active");
-
-          selectBestVoice();
-        });
-      });
-    }
-
     function appendMessage(role, text) {
       const bubble = document.createElement("div");
       bubble.className = role === "user" ? "bubble-user" : "bubble-ai";
-      bubble.textContent = text;
+
       const box = document.getElementById("chatBox");
+
+      if (role === "assistant") {
+        bubble.innerHTML = formatTextWithLinks(text);
+      } else {
+        bubble.textContent = text;
+      }
+
       box.appendChild(bubble);
       box.scrollTop = box.scrollHeight;
 
@@ -1025,22 +995,78 @@ Te recomiendo elegir según tu objetivo actual:
 
       appendMessage("user", message);
 
-      // 1) Primer paso: capturar nombre
-      if (!hasName) {
+      // === ONBOARDING ===
+      if (introStep === 1) {
+        // Pregunta 1: idioma
+        currentLang = detectLangChoice(message);
+
+        let q2;
+        if (currentLang === "en") {
+          q2 =
+            "Great. We'll interact in English. Now tell me: do you prefer Esteborg's voice to sound more masculine or more feminine?";
+          input.placeholder = "Type: masculine or feminine…";
+        } else {
+          q2 =
+            "Perfecto. Interactuaremos en español. Ahora dime: ¿quieres que la voz de Esteborg suene más masculina o más femenina?";
+          input.placeholder = "Escribe: masculina o femenina…";
+        }
+
+        appendMessage("assistant", q2);
+
+        history.push({ role: "user", content: message });
+        history.push({ role: "assistant", content: q2 });
+
+        introStep = 2;
+        selectBestVoice();
+        input.value = "";
+        input.focus();
+        return;
+      }
+
+      if (introStep === 2) {
+        // Pregunta 2: voz
+        currentVoiceGender = detectVoiceGenderChoice(message);
+        selectBestVoice();
+
+        let q3;
+        if (currentLang === "en") {
+          q3 = "Perfect. What's your name?";
+          input.placeholder = "Type your name…";
+        } else {
+          q3 = "Perfecto. Ahora dime, ¿cómo te llamas?";
+          input.placeholder = "Escribe tu nombre…";
+        }
+
+        appendMessage("assistant", q3);
+
+        history.push({ role: "user", content: message });
+        history.push({ role: "assistant", content: q3 });
+
+        introStep = 3;
+        input.value = "";
+        input.focus();
+        return;
+      }
+
+      if (introStep === 3) {
+        // Pregunta 3: nombre
         userName = message;
-        hasName = true;
 
         let followUp;
         if (currentLang === "en") {
           followUp =
             `Thanks, ${userName}. ` +
-            `Tell me in one sentence what you want to improve first: ` +
+            `Now tell me in one sentence what you want to improve first: ` +
             `your communication, your leadership or your mental clarity.`;
+          input.placeholder =
+            "E.g. I want to communicate better with my team…";
         } else {
           followUp =
             `Gracias, ${userName}. ` +
-            `Cuéntame en una frase qué quieres mejorar primero: ` +
+            `Ahora sí: cuéntame en una frase qué quieres mejorar primero: ` +
             `tu comunicación, tu liderazgo o tu claridad mental.`;
+          input.placeholder =
+            "Ej. Quiero comunicarme mejor con mi equipo…";
         }
 
         appendMessage("assistant", followUp);
@@ -1048,16 +1074,15 @@ Te recomiendo elegir según tu objetivo actual:
         history.push({ role: "user", content: message });
         history.push({ role: "assistant", content: followUp });
 
+        introStep = 4;
         input.value = "";
-        input.placeholder =
-          currentLang === "en"
-            ? "E.g. I want to communicate better with my team…"
-            : "Ej. Quiero comunicarme mejor con mi equipo…";
         input.focus();
         return;
       }
 
-      // 2) Pregunta sobre contratar plan → respuesta fija
+      // === FIN ONBOARDING / MODO NORMAL ===
+
+      // Pregunta sobre contratar plan → respuesta fija
       if (isPlanQuestion(message)) {
         appendMessage("assistant", FIXED_PLAN_ANSWER);
 
@@ -1069,7 +1094,7 @@ Te recomiendo elegir según tu objetivo actual:
         return;
       }
 
-      // 3) Resto de mensajes → backend
+      //  Resto de mensajes → backend
       setLoading(true);
 
       // Forzamos idioma del modelo según selector
@@ -1206,38 +1231,6 @@ Te recomiendo elegir según tu objetivo actual:
       });
     }
 
-    function setupLangSelector() {
-      const container = document.getElementById("langSelector");
-      if (!container) return;
-
-      const btns = container.querySelectorAll(".lang-btn");
-      btns.forEach((btn) => {
-        btn.addEventListener("click", () => {
-          const lang = btn.getAttribute("data-lang");
-          currentLang = lang || "es";
-
-          btns.forEach((b) => b.classList.remove("active"));
-          btn.classList.add("active");
-
-          const input = document.getElementById("userMsg");
-          if (!hasName) {
-            input.placeholder =
-              currentLang === "en"
-                ? "Type your name to begin…"
-                : "Escribe tu nombre para comenzar…";
-          } else {
-            input.placeholder =
-              currentLang === "en"
-                ? "E.g. I want to communicate better with my team…"
-                : "Ej. Quiero comunicarme mejor con mi equipo…";
-          }
-
-          // Al cambiar idioma, re-seleccionamos voz adecuada
-          selectBestVoice();
-        });
-      });
-    }
-
     // Listeners principales
     document.getElementById("sendBtn").addEventListener("click", sendMessage);
 
@@ -1253,21 +1246,24 @@ Te recomiendo elegir según tu objetivo actual:
       btn.addEventListener("click", () => {
         if (demoEnded || isSending) return;
         const input = document.getElementById("userMsg");
-        if (!hasName) {
-          input.value = btn.textContent;
+        // Si aún estamos en onboarding, los starters no tienen sentido
+        if (introStep < 4) {
+          input.value = "";
           input.focus();
-        } else {
-          input.value = btn.textContent;
-          sendMessage();
+          appendMessage(
+            "assistant",
+            "Primero terminemos las preguntas iniciales y luego usamos tus retos como ejemplo."
+          );
+          return;
         }
+        input.value = btn.textContent;
+        sendMessage();
       });
     });
 
-    // Inicializar voz entrada/salida e idioma
+    // Inicializar voz entrada/salida
     setupTTS();
     setupVoiceInput();
-    setupLangSelector();
-    setupVoiceSelector();
   </script>
 </body>
 </html>
