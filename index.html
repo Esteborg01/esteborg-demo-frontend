@@ -786,20 +786,13 @@ Te recomiendo elegir según tu objetivo actual:
       if (!synth) return;
 
       const allVoices = synth.getVoices();
-      if (!allVoices || allVoices.length === 0) return;
+      if (!allVoices || !allVoices.length) return;
 
       const lang = getSpeechLangCode(); // es-MX o en-US
-      const base = lang.split("-")[0];
+      const base = lang.split("-")[0];   // "es" o "en"
 
-      const maleNames = [
-        "pablo", "jorge", "diego", "carlos", "juan",
-        "miguel", "manuel", "raul", "raúl",
-        "google español", "google us english",
-        "christopher", "david", "mark", "guy", "mike", "ryan"
-      ];
-
-      let candidates = allVoices.filter(v =>
-        v.lang && v.lang.toLowerCase().startsWith(base)
+      let candidates = allVoices.filter(
+        (v) => v.lang && v.lang.toLowerCase().startsWith(base)
       );
 
       if (!candidates.length) {
@@ -807,18 +800,85 @@ Te recomiendo elegir según tu objetivo actual:
         return;
       }
 
-      const best = candidates.find(v =>
-        maleNames.some(n => (v.name || "").toLowerCase().includes(n))
-      );
+      // 🎯 ESPAÑOL: buscamos voz masculina moderna, priorizando México
+      if (base === "es") {
+        let best = null;
+        let bestScore = -999;
 
-      if (best) {
+        candidates.forEach((v) => {
+          const name = (v.name || "").toLowerCase();
+          const vlang = (v.lang || "").toLowerCase();
+          let score = 0;
+
+          // Preferir México
+          if (vlang.includes("es-mx")) score += 6;
+
+          // Voces que queremos usar como Esteborg
+          if (name.includes("eddy")) score += 5;
+          if (name.includes("reed")) score += 4;
+          if (name.includes("rocko")) score += 3;
+          if (name.includes("grandpa")) score += 2;
+
+          // Penalizar voces femeninas o viejitas
+          if (name.includes("mónica") || name.includes("monica")) score -= 6;
+          if (name.includes("paulina")) score -= 6;
+          if (name.includes("sandy")) score -= 5;
+          if (name.includes("shelley")) score -= 5;
+          if (name.includes("grandma")) score -= 8;
+
+          // Penalizar Google español genérico (lo usamos solo si no hay nada mejor)
+          if (name.includes("google español")) score -= 3;
+
+          if (score > bestScore) {
+            bestScore = score;
+            best = v;
+          }
+        });
+
+        if (!best) {
+          best = candidates[0];
+        }
+
         selectedVoice = best;
-      } else {
-        selectedVoice = candidates[0];
+        console.log(
+          "🔊 Voz seleccionada Esteborg:",
+          selectedVoice && selectedVoice.name,
+          selectedVoice && selectedVoice.lang
+        );
+        return;
       }
 
+      // 🌎 INGLÉS: elegimos una voz masculina clara
+      if (base === "en") {
+        const maleNamesEn = [
+          "google uk english male",
+          "albert",
+          "daniel",
+          "fred",
+          "junior",
+          "ralph"
+        ];
+
+        let best =
+          candidates.find((v) =>
+            maleNamesEn.some((n) =>
+              (v.name || "").toLowerCase().includes(n)
+            )
+          ) || candidates[0];
+
+        selectedVoice = best;
+        console.log(
+          "🔊 Voz seleccionada Esteborg (EN):",
+          selectedVoice && selectedVoice.name,
+          selectedVoice && selectedVoice.lang
+        );
+        return;
+      }
+
+      // Fallback para otros idiomas
+      selectedVoice = candidates[0];
       console.log(
-        "🔊 Voz seleccionada Esteborg:",
+        "🔊 Voz seleccionada Esteborg (fallback):",
         selectedVoice && selectedVoice.name,
         selectedVoice && selectedVoice.lang
       );
@@ -838,11 +898,11 @@ Te recomiendo elegir según tu objetivo actual:
 
         // Voz masculina ejecutiva
         if (getSpeechLangCode().startsWith("es")) {
-          utter.rate = 1.05;
-          utter.pitch = 0.92;
+          utter.rate = 1.0;
+          utter.pitch = 0.85;
         } else {
           utter.rate = 1.0;
-          utter.pitch = 0.94;
+          utter.pitch = 0.9;
         }
 
         currentUtterance = utter;
@@ -1052,7 +1112,7 @@ Te recomiendo elegir según tu objetivo actual:
         message: finalMessage,
         userName: userName || "Invitado",
         history: history,
-        lang: currentLang // 👈 esto alimenta el backend
+        lang: currentLang // 👈 alimenta el backend
       };
 
       try {
