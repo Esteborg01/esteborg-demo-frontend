@@ -297,6 +297,29 @@
       color: var(--accent-soft);
     }
 
+    .voice-selector {
+      display: inline-flex;
+      border-radius: 999px;
+      overflow: hidden;
+      border: 1px solid var(--border-subtle);
+      background: rgba(5, 5, 12, 0.92);
+      margin-right: 4px;
+    }
+
+    .voice-btn {
+      border: none;
+      background: transparent;
+      color: var(--text-soft);
+      font-size: 11px;
+      padding: 5px 8px;
+      cursor: pointer;
+    }
+
+    .voice-btn.active {
+      background: rgba(216, 177, 90, 0.16);
+      color: var(--accent-soft);
+    }
+
     .tts-toggle {
       border-radius: 999px;
       border: 1px solid var(--border-subtle);
@@ -657,6 +680,11 @@
               <button data-lang="en" class="lang-btn">EN</button>
             </div>
 
+            <div id="voiceSelector" class="voice-selector">
+              <button data-gender="f" class="voice-btn active">Voz F</button>
+              <button data-gender="m" class="voice-btn">Voz M</button>
+            </div>
+
             <button
               id="ttsToggleBtn"
               class="tts-toggle on"
@@ -728,6 +756,9 @@
     let synth = window.speechSynthesis || null;
     let currentUtterance = null;
     let ttsEnabled = true;
+    let voices = [];
+    let selectedVoice = null;
+    let currentVoiceGender = "f"; // "f" o "m"
 
     // Voz de entrada (ASR)
     let recognition = null;
@@ -750,6 +781,81 @@ Te recomiendo elegir según tu objetivo actual:
 
 ¿Quieres que te ayude a decidir cuál de estos tres caminos se adapta mejor a tu situación actual?`;
 
+    // ====== GESTIÓN DE VOCES (TTS) ======
+    function loadVoices() {
+      if (!synth) return;
+      voices = synth.getVoices() || [];
+      selectBestVoice();
+    }
+
+    function selectBestVoice() {
+      if (!synth || !voices || !voices.length) {
+        selectedVoice = null;
+        return;
+      }
+
+      const langCode = getSpeechLangCode(); // es-MX / en-US
+      const baseLang = langCode.split("-")[0]; // "es" / "en"
+      const candidates = voices.filter(
+        (v) => v.lang && v.lang.toLowerCase().startsWith(baseLang)
+      );
+
+      if (!candidates.length) {
+        selectedVoice = null;
+        return;
+      }
+
+      const gender = currentVoiceGender;
+      let preferredNames = [];
+
+      if (baseLang === "es") {
+        preferredNames =
+          gender === "f"
+            ? [
+                "Sabina",
+                "Helena",
+                "Camila",
+                "Luciana",
+                "Google español",
+                "Microsoft Sabina",
+                "Microsoft Helena",
+              ]
+            : [
+                "Pablo",
+                "Jorge",
+                "Diego",
+                "Carlos",
+                "Juan",
+                "Google español de Estados Unidos",
+                "Microsoft Pablo",
+              ];
+      } else if (baseLang === "en") {
+        preferredNames =
+          gender === "f"
+            ? [
+                "Samantha",
+                "Aria",
+                "Jenny",
+                "Google US English",
+                "Microsoft Zira",
+              ]
+            : ["Guy", "Christopher", "David", "Mark", "Google US English"];
+      }
+
+      for (const name of preferredNames) {
+        const match = candidates.find((v) =>
+          v.name.toLowerCase().includes(name.toLowerCase())
+        );
+        if (match) {
+          selectedVoice = match;
+          return;
+        }
+      }
+
+      // Fallback: primera voz disponible del idioma
+      selectedVoice = candidates[0];
+    }
+
     // === TTS ===
     function speak(text) {
       if (!ttsEnabled || !synth || !text) return;
@@ -759,6 +865,9 @@ Te recomiendo elegir según tu objetivo actual:
         }
         const utter = new SpeechSynthesisUtterance(text);
         utter.lang = getSpeechLangCode();
+        if (selectedVoice) {
+          utter.voice = selectedVoice;
+        }
         utter.rate = 1;
         utter.pitch = 1;
         currentUtterance = utter;
@@ -778,7 +887,15 @@ Te recomiendo elegir según tu objetivo actual:
       if (!synth) {
         ttsBtn.style.display = "none";
         ttsEnabled = false;
+        const vs = document.getElementById("voiceSelector");
+        if (vs) vs.style.display = "none";
         return;
+      }
+
+      // Cargar voces iniciales
+      loadVoices();
+      if (typeof speechSynthesis !== "undefined") {
+        speechSynthesis.onvoiceschanged = loadVoices;
       }
 
       ttsBtn.addEventListener("click", () => {
@@ -792,6 +909,29 @@ Te recomiendo elegir según tu objetivo actual:
         } else {
           ttsBtn.classList.remove("on");
         }
+      });
+    }
+
+    function setupVoiceSelector() {
+      const container = document.getElementById("voiceSelector");
+      if (!container) return;
+
+      if (!synth) {
+        container.style.display = "none";
+        return;
+      }
+
+      const btns = container.querySelectorAll(".voice-btn");
+      btns.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const gender = btn.getAttribute("data-gender");
+          currentVoiceGender = gender === "m" ? "m" : "f";
+
+          btns.forEach((b) => b.classList.remove("active"));
+          btn.classList.add("active");
+
+          selectBestVoice();
+        });
       });
     }
 
@@ -1044,6 +1184,9 @@ Te recomiendo elegir según tu objetivo actual:
                 ? "E.g. I want to communicate better with my team…"
                 : "Ej. Quiero comunicarme mejor con mi equipo…";
           }
+
+          // Al cambiar idioma, re-seleccionamos voz adecuada
+          selectBestVoice();
         });
       });
     }
@@ -1077,6 +1220,7 @@ Te recomiendo elegir según tu objetivo actual:
     setupTTS();
     setupVoiceInput();
     setupLangSelector();
+    setupVoiceSelector();
   </script>
 </body>
 </html>
