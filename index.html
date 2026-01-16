@@ -60,33 +60,11 @@
       box-shadow:
         0 26px 80px rgba(0, 0, 0, 0.8),
         0 0 0 1px rgba(216, 177, 90, 0.2);
-    }
-
-    /* Borde “glass” premium */
-    .shell::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      border-radius: inherit;
-      padding: 1px;
-      background: linear-gradient(
-        135deg,
-        rgba(216, 177, 90, 0.85),
-        rgba(50, 50, 80, 0.2),
-        rgba(216, 177, 90, 0.35)
-      );
-      -webkit-mask:
-        linear-gradient(#000 0 0) content-box,
-        linear-gradient(#000 0 0);
-      -webkit-mask-composite: xor;
-      mask-composite: exclude;
-      opacity: 0.9;
-      pointer-events: none;
+      border: 1px solid rgba(216, 177, 90, 0.35);
     }
 
     .shell-inner {
       position: relative;
-      z-index: 1;
       display: grid;
       grid-template-columns: minmax(0, 1.2fr) minmax(0, 1.4fr);
       gap: 24px;
@@ -290,13 +268,6 @@
       box-shadow: 0 0 8px rgba(8, 218, 146, 0.9);
     }
 
-    .typing {
-      font-size: 11px;
-      color: var(--text-soft);
-      opacity: 0.8;
-      animation: pulse 1.4s ease-in-out infinite;
-    }
-
     .chat-box {
       background: rgba(2, 2, 8, 0.97);
       border-radius: 12px;
@@ -479,12 +450,6 @@
 
     .footnote-chat span {
       color: var(--accent-soft);
-    }
-
-    @keyframes pulse {
-      0% { opacity: 0.4; }
-      50% { opacity: 1; }
-      100% { opacity: 0.4; }
     }
 
     @media (max-width: 900px) {
@@ -673,7 +638,6 @@
       }
     }
 
-    // Control del estado del demo y la etiqueta
     function setDemoStatus(status, remaining) {
       const label = document.getElementById("demoStatusLabel");
 
@@ -683,13 +647,12 @@
         return;
       }
 
-      // Si no queremos mostrar conteo (antes de la 7ma)
+      // Antes de la 7ma–8va interacción: no mostramos conteo
       if (remaining === null || remaining === undefined) {
         label.textContent = "Demo activo";
         return;
       }
 
-      // Mostrar solo cuando queden 3 o menos
       label.textContent = `Demo activa · ${remaining} interacciones restantes`;
     }
 
