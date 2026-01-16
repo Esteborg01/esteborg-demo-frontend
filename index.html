@@ -3,47 +3,105 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Demo Esteborg</title>
+  <title>Demo Esteborg Ejecutivo</title>
 
   <style>
     :root {
       --bg-main: #050509;
-      --card-bg: #101018;
-      --accent: #d2a755;
-      --accent-soft: #b99846;
-      --text-main: #f5f5f5;
-      --text-soft: #a8a8b3;
+      --bg-gradient-start: #151521;
+      --bg-gradient-end: #050509;
+      --card-bg: #0c0c14;
+      --card-inner: #101018;
+      --accent: #d8b15a;
+      --accent-soft: #b89446;
+      --accent-soft-2: #8c6a2e;
+      --text-main: #f7f7fb;
+      --text-soft: #a7a7bc;
+      --text-dim: #77778a;
+      --border-subtle: rgba(255, 255, 255, 0.06);
+      --border-strong: rgba(216, 177, 90, 0.45);
+      --radius-lg: 22px;
+      --radius-md: 14px;
     }
 
     * {
       box-sizing: border-box;
     }
 
-    body {
+    html, body {
       margin: 0;
-      padding: 24px;
+      padding: 0;
+      height: 100%;
+    }
+
+    body {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Inter",
         "Segoe UI", sans-serif;
-      background: radial-gradient(circle at top, #181828 0, #050509 55%);
+      font-size: 16px;
+      background:
+        radial-gradient(circle at top, rgba(216, 177, 90, 0.09) 0, transparent 45%),
+        radial-gradient(circle at bottom, #181828 0, #050509 55%);
       color: var(--text-main);
       display: flex;
       min-height: 100vh;
       align-items: center;
       justify-content: center;
+      padding: 24px;
     }
 
     .shell {
       width: 100%;
-      max-width: 820px;
-      background: linear-gradient(145deg, #141422, #0a0a12);
-      border-radius: 18px;
-      padding: 26px 22px 22px;
-      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7);
-      border: 1px solid rgba(210, 167, 85, 0.25);
+      max-width: 1040px;
+      background: radial-gradient(circle at top left, #181828 0, #050509 60%);
+      border-radius: var(--radius-lg);
+      padding: 26px 26px 22px;
+      position: relative;
+      overflow: hidden;
+      box-shadow:
+        0 26px 80px rgba(0, 0, 0, 0.8),
+        0 0 0 1px rgba(216, 177, 90, 0.2);
     }
 
-    .header {
-      margin-bottom: 18px;
+    /* Borde “glass” premium */
+    .shell::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      padding: 1px;
+      background: linear-gradient(
+        135deg,
+        rgba(216, 177, 90, 0.85),
+        rgba(50, 50, 80, 0.2),
+        rgba(216, 177, 90, 0.35)
+      );
+      -webkit-mask:
+        linear-gradient(#000 0 0) content-box,
+        linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      opacity: 0.9;
+      pointer-events: none;
+    }
+
+    .shell-inner {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1.4fr);
+      gap: 24px;
+      align-items: stretch;
+    }
+
+    @media (max-width: 900px) {
+      .shell-inner {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    /* Columna izquierda: info de valor */
+    .left-panel {
+      padding-right: 10px;
     }
 
     .eyebrow {
@@ -51,27 +109,114 @@
       text-transform: uppercase;
       letter-spacing: 0.16em;
       color: var(--accent-soft);
-      margin-bottom: 4px;
+      margin-bottom: 6px;
     }
 
     h1 {
       margin: 0;
-      font-size: 22px;
+      font-size: 26px;
       line-height: 1.3;
     }
 
     .subcopy {
-      margin-top: 6px;
-      font-size: 13px;
+      margin-top: 10px;
+      font-size: 14px;
+      line-height: 1.7;
       color: var(--text-soft);
     }
 
-    .chat-wrapper {
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+      font-size: 11px;
+    }
+
+    .badge {
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(216, 177, 90, 0.4);
+      background: radial-gradient(
+        circle at top left,
+        rgba(216, 177, 90, 0.16),
+        rgba(5, 5, 12, 0.95)
+      );
+      color: var(--text-soft);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .badge-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: #06d39a;
+      box-shadow: 0 0 10px rgba(6, 211, 154, 0.8);
+    }
+
+    .metrics {
       margin-top: 16px;
-      background: radial-gradient(circle at top left, #1c1c2a 0, #101018 45%, #08080d 100%);
+      padding: 10px 12px;
       border-radius: 14px;
+      background: linear-gradient(
+        135deg,
+        rgba(216, 177, 90, 0.12),
+        rgba(7, 7, 16, 0.96)
+      );
+      border: 1px solid rgba(216, 177, 90, 0.38);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      font-size: 12px;
+      color: var(--text-soft);
+    }
+
+    .metric-item {
+      min-width: 120px;
+    }
+
+    .metric-label {
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-size: 10px;
+      color: var(--text-dim);
+      margin-bottom: 4px;
+    }
+
+    .metric-value {
+      font-size: 14px;
+      color: var(--text-main);
+    }
+
+    .metric-tag {
+      font-size: 11px;
+      color: var(--accent-soft);
+      margin-top: 2px;
+    }
+
+    .footnote-left {
+      margin-top: 14px;
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+
+    .footnote-left span {
+      color: var(--accent-soft);
+    }
+
+    /* Columna derecha: chat premium */
+    .chat-wrapper {
+      background: radial-gradient(circle at top right, #202030 0, #08080f 55%);
+      border-radius: 18px;
       padding: 16px 14px 14px;
       border: 1px solid rgba(255, 255, 255, 0.04);
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      min-height: 360px;
     }
 
     .chat-header {
@@ -80,21 +225,69 @@
       justify-content: space-between;
       font-size: 13px;
       color: var(--text-soft);
-      margin-bottom: 6px;
+      margin-bottom: 8px;
     }
 
     .chat-header-left {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
     }
 
-    .dot {
-      width: 8px;
-      height: 8px;
+    .avatar {
+      width: 30px;
+      height: 30px;
       border-radius: 999px;
-      background: #03c988;
-      box-shadow: 0 0 8px rgba(3, 201, 136, 0.8);
+      background: radial-gradient(circle at 30% 0%, #f5f5f5 0, #d8b15a 40%, #3a2e1a 100%);
+      border: 1px solid rgba(0, 0, 0, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 700;
+      color: #050509;
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1),
+                  0 14px 25px rgba(0, 0, 0, 0.75);
+    }
+
+    .avatar span {
+      transform: translateY(0.5px);
+    }
+
+    .chat-title-block {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .chat-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .chat-subtitle {
+      font-size: 11px;
+      color: var(--text-soft);
+    }
+
+    .pill-demo {
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(8, 218, 146, 0.12);
+      border: 1px solid rgba(8, 218, 146, 0.5);
+      font-size: 11px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .pill-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: #08da92;
+      box-shadow: 0 0 8px rgba(8, 218, 146, 0.9);
     }
 
     .typing {
@@ -105,13 +298,15 @@
     }
 
     .chat-box {
-      background: rgba(3, 3, 8, 0.9);
-      border-radius: 10px;
+      background: rgba(2, 2, 8, 0.97);
+      border-radius: 12px;
       padding: 10px 10px 8px;
-      max-height: 350px;
+      max-height: 420px;
+      flex: 1;
       overflow-y: auto;
       scrollbar-width: thin;
-      scrollbar-color: rgba(210, 167, 85, 0.7) transparent;
+      scrollbar-color: rgba(216, 177, 90, 0.7) transparent;
+      border: 1px solid rgba(255, 255, 255, 0.04);
     }
 
     .chat-box::-webkit-scrollbar {
@@ -123,61 +318,62 @@
     }
 
     .chat-box::-webkit-scrollbar-thumb {
-      background: rgba(210, 167, 85, 0.7);
+      background: rgba(216, 177, 90, 0.7);
       border-radius: 999px;
     }
 
     .bubble-user,
     .bubble-ai {
-      max-width: 85%;
-      margin: 8px 0;
-      padding: 9px 12px;
-      border-radius: 12px;
-      font-size: 17px;
-      line-height: 1.45;
+      max-width: 96%;
+      margin: 9px 0;
+      padding: 10px 13px 9px;
+      border-radius: 13px;
+      font-size: 18px;
+      line-height: 1.5;
     }
 
     .bubble-user {
       margin-left: auto;
-      background: linear-gradient(135deg, #202034, #101020);
+      background: linear-gradient(135deg, #26263c, #131320);
       color: #f9f9ff;
-      border: 1px solid rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.08);
       text-align: right;
     }
 
     .bubble-ai {
       margin-right: auto;
-      background: rgba(16, 16, 24, 0.96);
+      background: rgba(13, 13, 24, 0.96);
       color: #f5f5f5;
-      border: 1px solid rgba(210, 167, 85, 0.4);
+      border: 1px solid var(--border-strong);
       position: relative;
+      padding-top: 16px;
     }
 
     .bubble-ai::before {
       content: "Esteborg";
       position: absolute;
-      top: -11px;
-      left: 4px;
-      font-size: 12px;
+      top: 3px;
+      left: 12px;
+      font-size: 11px;
       letter-spacing: 0.16em;
       text-transform: uppercase;
       color: var(--accent-soft);
-      opacity: 0.9;
+      opacity: 0.95;
     }
 
     .input-row {
       display: flex;
-      gap: 8px;
-      margin-top: 10px;
+      gap: 10px;
+      margin-top: 11px;
       align-items: center;
     }
 
     .input-row input {
       flex: 1;
-      padding: 11px 12px;
-      border-radius: 11px;
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      background: rgba(5, 5, 12, 0.85);
+      padding: 12px 13px;
+      border-radius: 12px;
+      border: 1px solid var(--border-subtle);
+      background: rgba(5, 5, 12, 0.92);
       color: var(--text-main);
       font-size: 16px;
       outline: none;
@@ -185,44 +381,59 @@
 
     .input-row input::placeholder {
       color: #6f6f80;
+      font-size: 14px;
     }
 
     .input-row button {
-      padding: 10px 16px;
-      border-radius: 11px;
+      padding: 11px 18px;
+      border-radius: 12px;
       border: none;
-      background: linear-gradient(135deg, var(--accent), var(--accent-soft));
-      color: #000;
+      background: linear-gradient(
+        135deg,
+        var(--accent),
+        var(--accent-soft),
+        var(--accent-soft-2)
+      );
+      color: #040308;
       font-weight: 600;
       font-size: 15px;
       cursor: pointer;
       white-space: nowrap;
-      box-shadow: 0 10px 24px rgba(210, 167, 85, 0.45);
-      transition: transform 0.08s ease-out, box-shadow 0.08s ease-out,
-        filter 0.1s;
+      box-shadow: 0 12px 26px rgba(216, 177, 90, 0.55);
+      transition:
+        transform 0.08s ease-out,
+        box-shadow 0.08s ease-out,
+        filter 0.1s,
+        opacity 0.1s;
     }
 
     .input-row button:hover {
       transform: translateY(-1px);
-      box-shadow: 0 14px 30px rgba(210, 167, 85, 0.6);
+      box-shadow: 0 16px 34px rgba(216, 177, 90, 0.7);
       filter: brightness(1.04);
     }
 
     .input-row button:active {
       transform: translateY(0);
-      box-shadow: 0 8px 18px rgba(210, 167, 85, 0.55);
-      filter: brightness(0.98);
+      box-shadow: 0 9px 20px rgba(216, 177, 90, 0.6);
+      filter: brightness(0.97);
     }
 
-    .footnote {
-      margin-top: 10px;
+    .input-row button:disabled {
+      opacity: 0.7;
+      cursor: default;
+      box-shadow: 0 8px 18px rgba(216, 177, 90, 0.35);
+      transform: none;
+    }
+
+    .footnote-chat {
+      margin-top: 7px;
       font-size: 11px;
-      color: var(--text-soft);
+      color: var(--text-dim);
     }
 
-    .footnote span {
+    .footnote-chat span {
       color: var(--accent-soft);
-      font-weight: 500;
     }
 
     @keyframes pulse {
@@ -231,32 +442,58 @@
       100% { opacity: 0.4; }
     }
 
-    @media (max-width: 600px) {
+    @media (max-width: 900px) {
       body {
-        padding: 16px;
+        padding: 18px;
       }
 
       .shell {
-        padding: 20px 16px 16px;
+        padding: 20px 18px 16px;
+      }
+
+      .left-panel {
+        padding-right: 0;
       }
 
       h1 {
-        font-size: 20px;
+        font-size: 23px;
+      }
+
+      .metrics {
+        margin-top: 14px;
+      }
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 14px;
+      }
+
+      .shell {
+        padding: 18px 14px 14px;
+      }
+
+      .shell-inner {
+        gap: 18px;
+      }
+
+      .chat-box {
+        max-height: 360px;
+      }
+
+      .bubble-user,
+      .bubble-ai {
+        font-size: 17px;
       }
 
       .input-row {
         flex-direction: column;
-        align-items: stretch;
       }
 
       .input-row button {
         width: 100%;
-        justify-content: center;
         text-align: center;
-      }
-
-      .chat-box {
-        max-height: 320px;
+        justify-content: center;
       }
     }
   </style>
@@ -264,42 +501,93 @@
 
 <body>
   <div class="shell">
-    <div class="header">
-      <div class="eyebrow">Demo Esteborg</div>
-      <h1>Tu sesión ejecutiva de prueba</h1>
-      <p class="subcopy">
-        Escribe lo que estás enfrentando hoy y Esteborg te responde en tiempo real,
-        como un entrenador ejecutivo inteligente.
-      </p>
-    </div>
+    <div class="shell-inner">
+      <!-- Columna izquierda: contexto del demo -->
+      <div class="left-panel">
+        <div class="eyebrow">Demo ejecutivo Esteborg</div>
+        <h1>Prueba cómo piensa un entrenador de alto nivel antes de contratarlo.</h1>
+        <p class="subcopy">
+          En esta demo Esteborg analiza tu comunicación, tu liderazgo y tu claridad mental
+          como si fuera un coach ejecutivo real, pero en versión digital. 
+          Tú pones el reto, él te devuelve un diagnóstico y acciones puntuales.
+        </p>
 
-    <div class="chat-wrapper">
-      <div class="chat-header">
-        <div class="chat-header-left">
-          <div class="dot"></div>
-          <span>Esteborg está disponible</span>
+        <div class="badge-row">
+          <div class="badge">
+            <span class="badge-dot"></span>
+            Sesión guiada en tiempo real
+          </div>
+          <div class="badge">
+            10 interacciones demo
+          </div>
+          <div class="badge">
+            Enfoque: comunicación + liderazgo
+          </div>
         </div>
-        <div class="typing">Demo activo</div>
-      </div>
 
-      <div id="chatBox" class="chat-box">
-        <div class="bubble-ai">
-          Cuéntame en una frase qué quieres mejorar primero:
-          tu comunicación, tu liderazgo o tu claridad mental.
+        <div class="metrics">
+          <div class="metric-item">
+            <div class="metric-label">Modo</div>
+            <div class="metric-value">Demo estratégico</div>
+            <div class="metric-tag">Sin humo. Solo claridad.</div>
+          </div>
+          <div class="metric-item">
+            <div class="metric-label">Estilo</div>
+            <div class="metric-value">Ejecutivo, humano</div>
+            <div class="metric-tag">Tono directo y empático</div>
+          </div>
+          <div class="metric-item">
+            <div class="metric-label">Siguiente paso</div>
+            <div class="metric-value">Entrenadores de 7 días</div>
+            <div class="metric-tag">Acceso vía Members VIP</div>
+          </div>
+        </div>
+
+        <div class="footnote-left">
+          Al terminar la demo, podrás ir a <span>Esteborg Members VIP</span> para desbloquear
+          los programas profundos de comunicación, liderazgo y ventas consultivas.
         </div>
       </div>
 
-      <div class="input-row">
-        <input
-          id="userMsg"
-          type="text"
-          placeholder="Ej. Quiero comunicarme mejor con mi equipo sin tanta fricción…"
-        />
-        <button id="sendBtn">Enviar a Esteborg</button>
-      </div>
+      <!-- Columna derecha: chat -->
+      <div class="chat-wrapper">
+        <div class="chat-header">
+          <div class="chat-header-left">
+            <div class="avatar">
+              <span>E</span>
+            </div>
+            <div class="chat-title-block">
+              <div class="chat-title">Esteborg · Demo diagnóstico</div>
+              <div class="chat-subtitle">Entrenador ejecutivo con IA aplicada</div>
+            </div>
+          </div>
+          <div class="pill-demo">
+            <div class="pill-dot"></div>
+            <span id="demoStatusLabel">Demo activo</span>
+          </div>
+        </div>
 
-      <div class="footnote">
-        Demo limitado. Al terminar tu sesión, podrás pasar a <span>Esteborg Members</span> para el entrenamiento completo.
+        <div id="chatBox" class="chat-box">
+          <div class="bubble-ai">
+            Cuéntame en una frase qué quieres mejorar primero:
+            tu comunicación, tu liderazgo o tu claridad mental.
+          </div>
+        </div>
+
+        <div class="input-row">
+          <input
+            id="userMsg"
+            type="text"
+            autocomplete="off"
+            placeholder="Ej. Quiero comunicarme mejor con mi equipo sin tanta fricción…"
+          />
+          <button id="sendBtn">Enviar a Esteborg</button>
+        </div>
+
+        <div class="footnote-chat">
+          Esta demo está limitada. Cuando llegue al final, Esteborg te invitará a continuar en
+          <span>Members VIP</span> con el entrenamiento completo.
+        </div>
       </div>
     </div>
   </div>
@@ -307,6 +595,8 @@
   <script>
     const API_URL = "https://esteborgcom7-backend.onrender.com/api/demo/welcome";
     let history = [];
+    let isSending = false;
+    let demoEnded = false;
 
     function appendMessage(role, text) {
       const bubble = document.createElement("div");
@@ -317,12 +607,42 @@
       box.scrollTop = box.scrollHeight;
     }
 
+    function setLoading(state) {
+      const btn = document.getElementById("sendBtn");
+      const input = document.getElementById("userMsg");
+      isSending = state;
+      btn.disabled = state || demoEnded;
+      input.disabled = demoEnded;
+      if (state) {
+        btn.textContent = "Pensando…";
+      } else if (!demoEnded) {
+        btn.textContent = "Enviar a Esteborg";
+      }
+    }
+
+    function setDemoStatus(status, remaining) {
+      const label = document.getElementById("demoStatusLabel");
+      if (status === "ended") {
+        demoEnded = true;
+        label.textContent = "Demo finalizada";
+      } else {
+        if (typeof remaining === "number") {
+          label.textContent = `Demo activa · ${remaining} interacciones restantes`;
+        } else {
+          label.textContent = "Demo activo";
+        }
+      }
+    }
+
     async function sendMessage() {
+      if (isSending || demoEnded) return;
+
       const input = document.getElementById("userMsg");
       const message = (input.value || "").trim();
       if (!message) return;
 
       appendMessage("user", message);
+      setLoading(true);
 
       const payload = {
         message: message,
@@ -343,18 +663,31 @@
           appendMessage("assistant", data.reply);
           history.push({ role: "user", content: message });
           history.push({ role: "assistant", content: data.reply });
+
+          if (data.demoStatus) {
+            setDemoStatus(data.demoStatus, data.remainingInteractions);
+          }
+
         } else {
-          appendMessage("assistant", "No recibí respuesta del servidor. Intenta de nuevo en un momento.");
+          appendMessage(
+            "assistant",
+            "No recibí respuesta del servidor. Intenta de nuevo en un momento."
+          );
         }
       } catch (err) {
-        appendMessage("assistant", "Hubo un problema de conexión. Vuelve a intentar en unos segundos.");
+        appendMessage(
+          "assistant",
+          "Hubo un problema de conexión. Vuelve a intentar en unos segundos."
+        );
       }
 
       input.value = "";
       input.focus();
+      setLoading(false);
     }
 
     document.getElementById("sendBtn").addEventListener("click", sendMessage);
+
     document.getElementById("userMsg").addEventListener("keypress", (e) => {
       if (e.key === "Enter") {
         e.preventDefault();
