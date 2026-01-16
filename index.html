@@ -1164,10 +1164,12 @@ Te recomiendo elegir según tu objetivo actual:
       }
 
       const payload = {
-        message: finalMessage,
-        userName: userName || "Invitado",
-        history: history
-      };
+  message: finalMessage,
+  userName: userName || "Invitado",
+  history: history,
+  lang: currentLang   // 👈 Nuevo campo para enviar el idioma al backend
+};
+
 
       try {
         const res = await fetch(API_URL, {
