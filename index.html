@@ -914,13 +914,13 @@ function renderStarters() {
         }
 
         // Voz masculina ejecutiva
-        if (getSpeechLangCode().startsWith("es")) {
-          utter.rate = 1.0;
-          utter.pitch = 0.85;
-        } else {
-          utter.rate = 1.0;
-          utter.pitch = 0.9;
-        }
+     if (getSpeechLangCode().startsWith("es")) {
+  utter.rate = 1.0;   // ritmo natural
+  utter.pitch = 0.9;  // grave pero no cavernoso
+} else {
+  utter.rate = 1.0;
+  utter.pitch = 0.9;
+}
 
         currentUtterance = utter;
         synth.speak(utter);
