@@ -335,7 +335,7 @@
       transition:
         transform 0.08s ease-out,
         box-shadow 0.08s ease-out,
-        background 0.08s ease-out,
+        background 0.08sease-out,
         border-color 0.08s ease-out;
     }
 
@@ -744,7 +744,7 @@
     let hasName = false;
     let userName = null;
 
-    // Idioma de experiencia (voz)
+    // Idioma de experiencia (voz / modelo)
     let currentLang = "es"; // "es" o "en"
 
     function getSpeechLangCode() {
@@ -796,13 +796,29 @@ Te recomiendo elegir según tu objetivo actual:
 
       const langCode = getSpeechLangCode(); // es-MX / en-US
       const baseLang = langCode.split("-")[0]; // "es" / "en"
-      const candidates = voices.filter(
+
+      // 1) Filtrar por idioma base (es / en)
+      let candidates = voices.filter(
         (v) => v.lang && v.lang.toLowerCase().startsWith(baseLang)
       );
 
       if (!candidates.length) {
         selectedVoice = null;
         return;
+      }
+
+      // 2) Para español: preferir México / US / 419 sobre España
+      if (baseLang === "es") {
+        const priorityLocales = ["-mx", "-us", "-419"];
+        for (const loc of priorityLocales) {
+          const subset = candidates.filter((v) =>
+            v.lang.toLowerCase().includes(loc)
+          );
+          if (subset.length) {
+            candidates = subset;
+            break;
+          }
+        }
       }
 
       const gender = currentVoiceGender;
@@ -842,6 +858,7 @@ Te recomiendo elegir según tu objetivo actual:
             : ["Guy", "Christopher", "David", "Mark", "Google US English"];
       }
 
+      // 3) Intentar match con nombres preferidos
       for (const name of preferredNames) {
         const match = candidates.find((v) =>
           v.name.toLowerCase().includes(name.toLowerCase())
@@ -852,7 +869,7 @@ Te recomiendo elegir según tu objetivo actual:
         }
       }
 
-      // Fallback: primera voz disponible del idioma
+      // 4) Fallback: primera voz del idioma
       selectedVoice = candidates[0];
     }
 
@@ -1013,10 +1030,18 @@ Te recomiendo elegir según tu objetivo actual:
         userName = message;
         hasName = true;
 
-        const followUp =
-          `Gracias, ${userName}. ` +
-          `Cuéntame en una frase qué quieres mejorar primero: ` +
-          `tu comunicación, tu liderazgo o tu claridad mental.`;
+        let followUp;
+        if (currentLang === "en") {
+          followUp =
+            `Thanks, ${userName}. ` +
+            `Tell me in one sentence what you want to improve first: ` +
+            `your communication, your leadership or your mental clarity.`;
+        } else {
+          followUp =
+            `Gracias, ${userName}. ` +
+            `Cuéntame en una frase qué quieres mejorar primero: ` +
+            `tu comunicación, tu liderazgo o tu claridad mental.`;
+        }
 
         appendMessage("assistant", followUp);
 
@@ -1047,8 +1072,20 @@ Te recomiendo elegir según tu objetivo actual:
       // 3) Resto de mensajes → backend
       setLoading(true);
 
+      // Forzamos idioma del modelo según selector
+      let finalMessage;
+      if (currentLang === "en") {
+        finalMessage =
+          "Please answer in English, using a fresh, modern, executive tone. " +
+          message;
+      } else {
+        finalMessage =
+          "Responde en español latino neutro, con un tono fresco, moderno y ejecutivo. " +
+          message;
+      }
+
       const payload = {
-        message: message,
+        message: finalMessage,
         userName: userName || "Invitado",
         history: history
       };
@@ -1132,10 +1169,16 @@ Te recomiendo elegir según tu objetivo actual:
         voiceBtn.textContent = "🎤";
       };
 
-      recognition.onerror = () => {
+      recognition.onerror = (event) => {
+        console.error("Error reconocimiento voz:", event.error);
         isListening = false;
         voiceBtn.classList.remove("listening");
         voiceBtn.textContent = "🎤";
+
+        appendMessage(
+          "assistant",
+          "Tu navegador bloqueó el micrófono en este contexto. Revisa permisos o abre la demo directamente fuera del embed."
+        );
       };
 
       recognition.onresult = (event) => {
@@ -1154,7 +1197,11 @@ Te recomiendo elegir según tu objetivo actual:
           recognition.stop();
         } else {
           recognition.lang = getSpeechLangCode();
-          recognition.start();
+          try {
+            recognition.start();
+          } catch (e) {
+            console.error("No se pudo iniciar reconocimiento de voz:", e);
+          }
         }
       });
     }
