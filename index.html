@@ -703,13 +703,13 @@
       return "es-MX";
     }
 
-    // Voz de salida (TTS)
+    // Voz de salida (TTS) - fija en masculino ejecutivo
     let synth = window.speechSynthesis || null;
     let currentUtterance = null;
     let ttsEnabled = true;
     let voices = [];
     let selectedVoice = null;
-    let currentVoiceGender = "f"; // "f" o "m"
+    let currentVoiceGender = "m"; // fijo en masculino
 
     // Voz de entrada (ASR)
     let recognition = null;
@@ -754,19 +754,9 @@ Te recomiendo elegir según tu objetivo actual:
       return "es";
     }
 
+    // Siempre regresamos masculino, aunque el usuario diga otra cosa
     function detectVoiceGenderChoice(message) {
-      const t = message.toLowerCase();
-      if (
-        t.includes("masculina") ||
-        t.includes("hombre") ||
-        t.includes("masculino") ||
-        t.includes("male") ||
-        t.includes("man")
-      ) {
-        return "m";
-      }
-      // default femenina
-      return "f";
+      return "m";
     }
 
     // ====== GESTIÓN DE VOCES (TTS) ======
@@ -777,15 +767,21 @@ Te recomiendo elegir según tu objetivo actual:
     }
 
     function selectBestVoice() {
-      if (!synth || !voices || !voices.length) {
+      if (!synth) {
+        selectedVoice = null;
+        return;
+      }
+
+      voices = synth.getVoices() || [];
+      if (!voices.length) {
         selectedVoice = null;
         return;
       }
 
       const langCode = getSpeechLangCode(); // es-MX / en-US
-      const baseLang = langCode.split("-")[0]; // "es" / "en"
+      const baseLang = langCode.split("-")[0]; // "es" o "en"
 
-      // 1) Filtrar por idioma base (es / en)
+      // Filtramos por idioma base
       let candidates = voices.filter(
         (v) => v.lang && v.lang.toLowerCase().startsWith(baseLang)
       );
@@ -795,9 +791,9 @@ Te recomiendo elegir según tu objetivo actual:
         return;
       }
 
-      // 2) Para español: preferir México / US / 419 sobre España
+      // 🎯 Lógica especial para español: buscar voz masculina moderna
       if (baseLang === "es") {
-        const priorityLocales = ["-mx", "-us", "-419"];
+        const priorityLocales = ["-mx", "-us", "-419", "-es"];
         for (const loc of priorityLocales) {
           const subset = candidates.filter((v) =>
             v.lang.toLowerCase().includes(loc)
@@ -807,58 +803,106 @@ Te recomiendo elegir según tu objetivo actual:
             break;
           }
         }
-      }
 
-      const gender = currentVoiceGender;
-      let preferredNames = [];
+        const maleNames = [
+          "pablo",
+          "jorge",
+          "diego",
+          "carlos",
+          "juan",
+          "miguel",
+          "pedro",
+          "manuel",
+          "enrique",
+          "alberto",
+          "raul",
+          "raúl"
+        ];
 
-      if (baseLang === "es") {
-        preferredNames =
-          gender === "f"
-            ? [
-                "Sabina",
-                "Helena",
-                "Camila",
-                "Luciana",
-                "Google español",
-                "Microsoft Sabina",
-                "Microsoft Helena",
-              ]
-            : [
-                "Pablo",
-                "Jorge",
-                "Diego",
-                "Carlos",
-                "Juan",
-                "Google español de Estados Unidos",
-                "Microsoft Pablo",
-              ];
-      } else if (baseLang === "en") {
-        preferredNames =
-          gender === "f"
-            ? [
-                "Samantha",
-                "Aria",
-                "Jenny",
-                "Google US English",
-                "Microsoft Zira",
-              ]
-            : ["Guy", "Christopher", "David", "Mark", "Google US English"];
-      }
+        let best = candidates[0];
+        let bestScore = -999;
 
-      // 3) Intentar match con nombres preferidos
-      for (const name of preferredNames) {
-        const match = candidates.find((v) =>
-          v.name.toLowerCase().includes(name.toLowerCase())
+        candidates.forEach((v) => {
+          let score = 0;
+          const name = (v.name || "").toLowerCase();
+
+          if (name.includes("google")) score += 2;
+          if (name.includes("microsoft")) score += 2;
+
+          if (maleNames.some((n) => name.includes(n))) score += 6;
+
+          if (v.lang.toLowerCase().includes("es-mx")) score += 2;
+          if (v.lang.toLowerCase().includes("es-us")) score += 1;
+
+          if (score > bestScore) {
+            bestScore = score;
+            best = v;
+          }
+        });
+
+        selectedVoice = best;
+        console.log(
+          "🔊 Voz seleccionada (ES masculino ejecutivo):",
+          selectedVoice.name,
+          selectedVoice.lang
         );
-        if (match) {
-          selectedVoice = match;
+        return;
+      }
+
+      // 🌎 Para inglés: preferir Google US English o voces típicas masculinas
+      if (baseLang === "en") {
+        const googleUS = voices.find(
+          (v) =>
+            v.lang &&
+            v.lang.toLowerCase().startsWith("en") &&
+            v.name.toLowerCase().includes("google us english")
+        );
+        if (googleUS) {
+          selectedVoice = googleUS;
+          console.log(
+            "🔊 Voz seleccionada (EN Google US):",
+            selectedVoice.name,
+            selectedVoice.lang
+          );
           return;
         }
+
+        const maleNamesEn = ["guy", "christopher", "david", "mark", "ryan", "mike"];
+
+        let best = candidates[0];
+        let bestScore = -999;
+
+        candidates.forEach((v) => {
+          let score = 0;
+          const name = (v.name || "").toLowerCase();
+
+          if (name.includes("google")) score += 2;
+          if (name.includes("microsoft")) score += 2;
+
+          if (maleNamesEn.some((n) => name.includes(n))) score += 6;
+
+          if (score > bestScore) {
+            bestScore = score;
+            best = v;
+          }
+        });
+
+        selectedVoice = best;
+        console.log(
+          "🔊 Voz seleccionada (EN masculino ejecutivo):",
+          selectedVoice.name,
+          selectedVoice.lang
+        );
+        return;
       }
 
-      // 4) Fallback: primera voz del idioma
+      // Fallback general si no se pudo afinar más
       selectedVoice = candidates[0];
+      console.log(
+        "🔊 Voz seleccionada fallback:",
+        selectedVoice.name,
+        selectedVoice.lang
+      );
     }
 
     // === TTS ===
@@ -873,8 +917,18 @@ Te recomiendo elegir según tu objetivo actual:
         if (selectedVoice) {
           utter.voice = selectedVoice;
         }
-        utter.rate = 1;
-        utter.pitch = 1;
+
+        // Esteborg: voz masculina, ejecutiva, moderna
+        if (getSpeechLangCode().startsWith("es")) {
+          // Español: un poco más ágil, tono ligeramente grave
+          utter.rate = 1.05;
+          utter.pitch = 0.95;
+        } else {
+          // Inglés: natural, firme y claro
+          utter.rate = 1.0;
+          utter.pitch = 0.96;
+        }
+
         currentUtterance = utter;
         synth.speak(utter);
         utter.onend = () => {
@@ -1024,7 +1078,7 @@ Te recomiendo elegir según tu objetivo actual:
       }
 
       if (introStep === 2) {
-        // Pregunta 2: voz
+        // Pregunta 2: voz (pero internamente siempre será masculino)
         currentVoiceGender = detectVoiceGenderChoice(message);
         selectBestVoice();
 
