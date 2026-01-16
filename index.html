@@ -203,7 +203,7 @@
       justify-content: space-between;
       font-size: 13px;
       color: var(--text-soft);
-      margin-bottom: 8px;
+      margin-bottom: 10px;
     }
 
     .chat-header-left {
@@ -278,6 +278,7 @@
       scrollbar-width: thin;
       scrollbar-color: rgba(216, 177, 90, 0.7) transparent;
       border: 1px solid rgba(255, 255, 255, 0.04);
+      margin-top: 8px;
     }
 
     .chat-box::-webkit-scrollbar {
@@ -332,9 +333,9 @@
       opacity: 0.95;
     }
 
-    /* Starters / iniciadores */
+    /* Starters / iniciadores — AHORA ARRIBA DEL CHAT */
     .starters {
-      margin-top: 10px;
+      margin-top: 4px;
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
@@ -577,19 +578,19 @@
           </div>
         </div>
 
-        <div id="chatBox" class="chat-box">
-          <div class="bubble-ai">
-            Cuéntame en una frase qué quieres mejorar primero:
-            tu comunicación, tu liderazgo o tu claridad mental.
-          </div>
-        </div>
-
-        <!-- Iniciadores de conversación -->
+        <!-- Iniciadores de conversación ARRIBA del chat -->
         <div class="starters">
           <button class="starter-btn">Quiero comunicarme mejor con mi equipo sin tanta fricción.</button>
           <button class="starter-btn">Siento que no proyecto la autoridad que debería.</button>
           <button class="starter-btn">Me trabo cuando tengo que decir cosas difíciles.</button>
           <button class="starter-btn">Quiero más claridad mental para tomar decisiones importantes.</button>
+        </div>
+
+        <div id="chatBox" class="chat-box">
+          <div class="bubble-ai">
+            Cuéntame en una frase qué quieres mejorar primero:
+            tu comunicación, tu liderazgo o tu claridad mental.
+          </div>
         </div>
 
         <div class="input-row">
@@ -638,6 +639,9 @@
       }
     }
 
+    // Control del estado del demo y la etiqueta
+    // El backend sigue contando desde la 1a interacción.
+    // Aquí SOLO mostramos el aviso cuando remaining <= 3 (≈ a partir de la 7ma respuesta).
     function setDemoStatus(status, remaining) {
       const label = document.getElementById("demoStatusLabel");
 
