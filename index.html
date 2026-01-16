@@ -212,6 +212,12 @@
       gap: 10px;
     }
 
+    .chat-header-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
     .avatar {
       width: 30px;
       height: 30px;
@@ -266,6 +272,53 @@
       border-radius: 999px;
       background: #08da92;
       box-shadow: 0 0 8px rgba(8, 218, 146, 0.9);
+    }
+
+    .lang-selector {
+      display: inline-flex;
+      border-radius: 999px;
+      overflow: hidden;
+      border: 1px solid var(--border-subtle);
+      background: rgba(5, 5, 12, 0.92);
+      margin-right: 4px;
+    }
+
+    .lang-btn {
+      border: none;
+      background: transparent;
+      color: var(--text-soft);
+      font-size: 11px;
+      padding: 5px 8px;
+      cursor: pointer;
+    }
+
+    .lang-btn.active {
+      background: rgba(216, 177, 90, 0.16);
+      color: var(--accent-soft);
+    }
+
+    .tts-toggle {
+      border-radius: 999px;
+      border: 1px solid var(--border-subtle);
+      background: rgba(5, 5, 12, 0.92);
+      color: var(--text-soft);
+      padding: 6px 9px;
+      font-size: 16px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+      transition:
+        transform 0.08s ease-out,
+        box-shadow 0.08s ease-out,
+        background 0.08s ease-out,
+        border-color 0.08s ease-out;
+    }
+
+    .tts-toggle.on {
+      border-color: rgba(216, 177, 90, 0.8);
+      box-shadow: 0 0 12px rgba(216, 177, 90, 0.7);
     }
 
     .chat-box {
@@ -333,7 +386,7 @@
       opacity: 0.95;
     }
 
-    /* Starters / iniciadores — AHORA ARRIBA DEL CHAT */
+    /* Starters / iniciadores — arriba del chat */
     .starters {
       margin-top: 4px;
       display: flex;
@@ -441,6 +494,32 @@
       cursor: default;
       box-shadow: 0 8px 18px rgba(216, 177, 90, 0.35);
       transform: none;
+    }
+
+    #voiceBtn {
+      padding: 10px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--border-subtle);
+      background: rgba(5, 5, 12, 0.92);
+      color: var(--text-soft);
+      font-size: 16px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+      transition:
+        transform 0.08s ease-out,
+        box-shadow 0.08s ease-out,
+        background 0.08s ease-out,
+        border-color 0.08s ease-out;
+    }
+
+    #voiceBtn.listening {
+      background: rgba(8, 218, 146, 0.16);
+      border-color: rgba(8, 218, 146, 0.7);
+      box-shadow: 0 0 12px rgba(8, 218, 146, 0.8);
+      transform: translateY(-1px);
     }
 
     .footnote-chat {
@@ -572,9 +651,24 @@
               <div class="chat-subtitle">Entrenador ejecutivo con IA aplicada</div>
             </div>
           </div>
-          <div class="pill-demo">
-            <div class="pill-dot"></div>
-            <span id="demoStatusLabel">Demo activo</span>
+          <div class="chat-header-right">
+            <div id="langSelector" class="lang-selector">
+              <button data-lang="es" class="lang-btn active">ES</button>
+              <button data-lang="en" class="lang-btn">EN</button>
+            </div>
+
+            <button
+              id="ttsToggleBtn"
+              class="tts-toggle on"
+              type="button"
+              title="Activar/desactivar voz de Esteborg"
+            >
+              🔊
+            </button>
+            <div class="pill-demo">
+              <div class="pill-dot"></div>
+              <span id="demoStatusLabel">Demo activo</span>
+            </div>
           </div>
         </div>
 
@@ -587,9 +681,9 @@
         </div>
 
         <div id="chatBox" class="chat-box">
+          <!-- Primera pregunta: pide el nombre -->
           <div class="bubble-ai">
-            Cuéntame en una frase qué quieres mejorar primero:
-            tu comunicación, tu liderazgo o tu claridad mental.
+            Antes de entrar a tu demo, dime, ¿cómo te llamas?
           </div>
         </div>
 
@@ -598,9 +692,12 @@
             id="userMsg"
             type="text"
             autocomplete="off"
-            placeholder="Ej. Quiero comunicarme mejor con mi equipo sin tanta fricción…"
+            placeholder="Escribe tu nombre para comenzar…"
           />
-          <button id="sendBtn">Enviar a Esteborg</button>
+          <button id="voiceBtn" type="button" title="Hablar con Esteborg">
+            🎤
+          </button>
+          <button id="sendBtn" type="button">Enviar a Esteborg</button>
         </div>
 
         <div class="footnote-chat">
@@ -616,6 +713,87 @@
     let history = [];
     let isSending = false;
     let demoEnded = false;
+    let hasName = false;
+    let userName = null;
+
+    // Idioma de experiencia (voz)
+    let currentLang = "es"; // "es" o "en"
+
+    function getSpeechLangCode() {
+      if (currentLang === "en") return "en-US";
+      return "es-MX";
+    }
+
+    // Voz de salida (TTS)
+    let synth = window.speechSynthesis || null;
+    let currentUtterance = null;
+    let ttsEnabled = true;
+
+    // Voz de entrada (ASR)
+    let recognition = null;
+    let isListening = false;
+
+    const FIXED_PLAN_ANSWER = `✨ Qué buena pregunta.
+Puedes acceder a todos los programas y entrenamientos de Esteban desde esta página oficial:
+👉 https://membersvip.esteborg.live/
+
+Y además, hoy tienes un cupón exclusivo del 50% de descuento para cualquier plan:
+🎁 EsteborgVIPOffer
+
+Te recomiendo elegir según tu objetivo actual:
+
+🧠 Entrenador Inteligente de Comunicación Emocional (7 días) → para desarrollar calma, empatía y expresión consciente.
+
+💬 Entrenador Inteligente de Ventas Conscientes (7 días) → si buscas conectar mejor con tus clientes y comunicar valor.
+
+💎 O el bundle completo, con ambos entrenamientos y una sesión personalizada con Esteban.
+
+¿Quieres que te ayude a decidir cuál de estos tres caminos se adapta mejor a tu situación actual?`;
+
+    // === TTS ===
+    function speak(text) {
+      if (!ttsEnabled || !synth || !text) return;
+      try {
+        if (currentUtterance) {
+          synth.cancel();
+        }
+        const utter = new SpeechSynthesisUtterance(text);
+        utter.lang = getSpeechLangCode();
+        utter.rate = 1;
+        utter.pitch = 1;
+        currentUtterance = utter;
+        synth.speak(utter);
+        utter.onend = () => {
+          currentUtterance = null;
+        };
+      } catch (e) {
+        console.error("Error TTS:", e);
+      }
+    }
+
+    function setupTTS() {
+      const ttsBtn = document.getElementById("ttsToggleBtn");
+      if (!ttsBtn) return;
+
+      if (!synth) {
+        ttsBtn.style.display = "none";
+        ttsEnabled = false;
+        return;
+      }
+
+      ttsBtn.addEventListener("click", () => {
+        ttsEnabled = !ttsEnabled;
+        if (!ttsEnabled && synth.speaking) {
+          synth.cancel();
+        }
+        ttsBtn.textContent = ttsEnabled ? "🔊" : "🔈";
+        if (ttsEnabled) {
+          ttsBtn.classList.add("on");
+        } else {
+          ttsBtn.classList.remove("on");
+        }
+      });
+    }
 
     function appendMessage(role, text) {
       const bubble = document.createElement("div");
@@ -624,6 +802,10 @@
       const box = document.getElementById("chatBox");
       box.appendChild(bubble);
       box.scrollTop = box.scrollHeight;
+
+      if (role === "assistant") {
+        speak(text);
+      }
     }
 
     function setLoading(state) {
@@ -639,9 +821,6 @@
       }
     }
 
-    // Control del estado del demo y la etiqueta
-    // El backend sigue contando desde la 1a interacción.
-    // Aquí SOLO mostramos el aviso cuando remaining <= 3 (≈ a partir de la 7ma respuesta).
     function setDemoStatus(status, remaining) {
       const label = document.getElementById("demoStatusLabel");
 
@@ -651,13 +830,33 @@
         return;
       }
 
-      // Antes de la 7ma–8va interacción: no mostramos conteo
       if (remaining === null || remaining === undefined) {
         label.textContent = "Demo activo";
         return;
       }
 
       label.textContent = `Demo activa · ${remaining} interacciones restantes`;
+    }
+
+    function isPlanQuestion(text) {
+      const t = (text || "").toLowerCase();
+      return (
+        t.includes("dónde contratar") ||
+        t.includes("donde contratar") ||
+        t.includes("dónde contrato") ||
+        t.includes("donde contrato") ||
+        t.includes("contratar un plan") ||
+        t.includes("contratar el plan") ||
+        t.includes("contratar esteborg") ||
+        t.includes("dónde compro esteborg") ||
+        t.includes("donde compro esteborg") ||
+        t.includes("dónde adquirir esteborg") ||
+        t.includes("donde adquirir esteborg") ||
+        t.includes("planes de esteborg") ||
+        t.includes("plan de esteborg") ||
+        t.includes("donde contrato un plan de esteborg") ||
+        t.includes("dónde contrato un plan de esteborg")
+      );
     }
 
     async function sendMessage() {
@@ -668,11 +867,49 @@
       if (!message) return;
 
       appendMessage("user", message);
+
+      // 1) Primer paso: capturar nombre
+      if (!hasName) {
+        userName = message;
+        hasName = true;
+
+        const followUp =
+          `Gracias, ${userName}. ` +
+          `Cuéntame en una frase qué quieres mejorar primero: ` +
+          `tu comunicación, tu liderazgo o tu claridad mental.`;
+
+        appendMessage("assistant", followUp);
+
+        history.push({ role: "user", content: message });
+        history.push({ role: "assistant", content: followUp });
+
+        input.value = "";
+        input.placeholder =
+          currentLang === "en"
+            ? "E.g. I want to communicate better with my team…"
+            : "Ej. Quiero comunicarme mejor con mi equipo…";
+        input.focus();
+        return;
+      }
+
+      // 2) Pregunta sobre contratar plan → respuesta fija
+      if (isPlanQuestion(message)) {
+        appendMessage("assistant", FIXED_PLAN_ANSWER);
+
+        history.push({ role: "user", content: message });
+        history.push({ role: "assistant", content: FIXED_PLAN_ANSWER });
+
+        input.value = "";
+        input.focus();
+        return;
+      }
+
+      // 3) Resto de mensajes → backend
       setLoading(true);
 
       const payload = {
         message: message,
-        userName: "Invitado",
+        userName: userName || "Invitado",
         history: history
       };
 
@@ -698,7 +935,7 @@
             if (data.demoStatus === "ended") {
               setDemoStatus("ended", 0);
             } else {
-              // Solo mostrar la alerta cuando queden 3 o menos
+              // solo mostrar alerta cuando queden 3 o menos
               if (remaining !== null && remaining <= 3) {
                 setDemoStatus("active", remaining);
               } else {
@@ -724,6 +961,94 @@
       setLoading(false);
     }
 
+    function setupVoiceInput() {
+      const VoiceRecognition =
+        window.SpeechRecognition || window.webkitSpeechRecognition;
+
+      const voiceBtn = document.getElementById("voiceBtn");
+      const input = document.getElementById("userMsg");
+
+      if (!voiceBtn) return;
+
+      if (!VoiceRecognition) {
+        voiceBtn.style.display = "none";
+        return;
+      }
+
+      recognition = new VoiceRecognition();
+      recognition.lang = getSpeechLangCode();
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+
+      recognition.onstart = () => {
+        isListening = true;
+        voiceBtn.classList.add("listening");
+        voiceBtn.textContent = "🎙";
+      };
+
+      recognition.onend = () => {
+        isListening = false;
+        voiceBtn.classList.remove("listening");
+        voiceBtn.textContent = "🎤";
+      };
+
+      recognition.onerror = () => {
+        isListening = false;
+        voiceBtn.classList.remove("listening");
+        voiceBtn.textContent = "🎤";
+      };
+
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript || "";
+        if (!transcript) return;
+
+        input.value = transcript;
+        // Mandamos directo el mensaje de voz
+        sendMessage();
+      };
+
+      voiceBtn.addEventListener("click", () => {
+        if (demoEnded || isSending) return;
+
+        if (isListening) {
+          recognition.stop();
+        } else {
+          recognition.lang = getSpeechLangCode();
+          recognition.start();
+        }
+      });
+    }
+
+    function setupLangSelector() {
+      const container = document.getElementById("langSelector");
+      if (!container) return;
+
+      const btns = container.querySelectorAll(".lang-btn");
+      btns.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const lang = btn.getAttribute("data-lang");
+          currentLang = lang || "es";
+
+          btns.forEach((b) => b.classList.remove("active"));
+          btn.classList.add("active");
+
+          const input = document.getElementById("userMsg");
+          if (!hasName) {
+            input.placeholder =
+              currentLang === "en"
+                ? "Type your name to begin…"
+                : "Escribe tu nombre para comenzar…";
+          } else {
+            input.placeholder =
+              currentLang === "en"
+                ? "E.g. I want to communicate better with my team…"
+                : "Ej. Quiero comunicarme mejor con mi equipo…";
+          }
+        });
+      });
+    }
+
+    // Listeners principales
     document.getElementById("sendBtn").addEventListener("click", sendMessage);
 
     document.getElementById("userMsg").addEventListener("keypress", (e) => {
@@ -733,15 +1058,25 @@
       }
     });
 
-    // Listeners para iniciadores de conversación
+    // Starters
     document.querySelectorAll(".starter-btn").forEach((btn) => {
       btn.addEventListener("click", () => {
         if (demoEnded || isSending) return;
         const input = document.getElementById("userMsg");
-        input.value = btn.textContent;
-        sendMessage();
+        if (!hasName) {
+          input.value = btn.textContent;
+          input.focus();
+        } else {
+          input.value = btn.textContent;
+          sendMessage();
+        }
       });
     });
+
+    // Inicializar voz entrada/salida e idioma
+    setupTTS();
+    setupVoiceInput();
+    setupLangSelector();
   </script>
 </body>
 </html>
