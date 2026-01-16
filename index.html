@@ -817,7 +817,7 @@ function renderStarters() {
     return;
   }
 
-  // 🎯 ESPAÑOL: priorizar Rocko / Reed / Grandpa en es-MX
+  // 🎯 ESPAÑOL: priorizar Reed → Eddy → Grandpa (eliminar Rocko)
   if (base === "es") {
     const lower = (s) => (s || "").toLowerCase();
 
@@ -825,7 +825,7 @@ function renderStarters() {
       lower(v.lang).includes("es-mx")
     );
 
-    const preferredOrder = ["rocko", "reed", "grandpa", "eddy"];
+    const preferredOrder = ["reed", "eddy", "grandpa"];
 
     // 1) Buscar en es-MX por orden de preferencia
     for (const namePart of preferredOrder) {
@@ -844,7 +844,7 @@ function renderStarters() {
     }
 
     // 2) Si no hay es-MX, buscar español que no sea femenino ni Google español
-    const blocked = ["mónica", "monica", "paulina", "sandy", "shelley", "grandma"];
+    const blocked = ["mónica", "monica", "paulina", "sandy", "shelley", "grandma", "rocko"];
     let filtered = candidates.filter((v) => {
       const nm = lower(v.name);
       if (blocked.some((b) => nm.includes(b))) return false;
@@ -865,7 +865,7 @@ function renderStarters() {
     return;
   }
 
-  // 🌎 INGLÉS: elegimos una voz masculina clara
+  // 🌎 INGLÉS
   if (base === "en") {
     const maleNamesEn = [
       "google uk english male",
@@ -892,7 +892,7 @@ function renderStarters() {
     return;
   }
 
-  // Fallback para otros idiomas
+  // Fallback
   selectedVoice = candidates[0];
   console.log(
     "🔊 Voz seleccionada Esteborg (fallback):",
