@@ -673,12 +673,7 @@
           </div>
         </div>
 
-        <div class="starters">
-          <button class="starter-btn">Quiero comunicarme mejor con mi equipo sin tanta fricción.</button>
-          <button class="starter-btn">Siento que no proyecto la autoridad que debería.</button>
-          <button class="starter-btn">Me trabo cuando tengo que decir cosas difíciles.</button>
-          <button class="starter-btn">Quiero más claridad mental para tomar decisiones importantes.</button>
-        </div>
+       <div id="startersContainer" class="starters"></div>
 
         <div id="chatBox" class="chat-box">
           <!-- Pregunta 1: idioma -->
@@ -753,6 +748,28 @@ Te recomiendo elegir según tu objetivo actual:
 💎 O el bundle completo, con ambos entrenamientos y una sesión personalizada con Esteban.
 
 ¿Quieres que te ayude a decidir cuál de estos tres caminos se adapta mejor a tu situación actual?`;
+
+    // ====== STARTERS CONFIGURABLES ======
+const STARTERS = [
+  "Siento que no proyecto la autoridad que debería.",
+  "Me trabo cuando tengo que decir cosas difíciles.",
+  "Quiero más claridad mental para tomar decisiones importantes.",
+  "Cómo mejora la IA mi comunicación."
+];
+
+function renderStarters() {
+  const container = document.getElementById("startersContainer");
+  if (!container) return;
+
+  container.innerHTML = "";
+
+  STARTERS.forEach((text) => {
+    const btn = document.createElement("button");
+    btn.className = "starter-btn";
+    btn.textContent = text;
+    container.appendChild(btn);
+  });
+}
 
     // ====== HELPERS ======
     function formatTextWithLinks(text) {
@@ -1239,26 +1256,34 @@ Te recomiendo elegir según tu objetivo actual:
       }
     });
 
-    document.querySelectorAll(".starter-btn").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        if (demoEnded || isSending) return;
-        const input = document.getElementById("userMsg");
-        if (introStep < 3) {
-          input.value = "";
-          input.focus();
-          appendMessage(
-            "assistant",
-            "Primero terminemos las preguntas iniciales y luego usamos tus retos como ejemplo."
-          );
-          return;
-        }
-        input.value = btn.textContent;
-        sendMessage();
-      });
-    });
+    const startersContainer = document.getElementById("startersContainer");
+if (startersContainer) {
+  startersContainer.addEventListener("click", (e) => {
+    const btn = e.target.closest(".starter-btn");
+    if (!btn) return;
+    if (demoEnded || isSending) return;
+
+    const input = document.getElementById("userMsg");
+
+    if (introStep < 3) {
+      input.value = "";
+      input.focus();
+      appendMessage(
+        "assistant",
+        "Primero terminemos las preguntas iniciales y luego usamos tus retos como ejemplo."
+      );
+      return;
+    }
+
+    input.value = btn.textContent;
+    sendMessage();
+  });
+}
+
 
     setupTTS();
-    setupVoiceInput();
+setupVoiceInput();
+renderStarters();
   </script>
 </body>
 </html>
