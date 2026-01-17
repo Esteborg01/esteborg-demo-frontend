@@ -943,13 +943,14 @@ async function speakFromApi(text) {
         bubble.textContent = text;
       }
 
-      box.appendChild(bubble);
-      box.scrollTop = box.scrollHeight;
+       box.appendChild(bubble);
+  box.scrollTop = box.scrollHeight;
 
-      if (role === "assistant") {
-        speak(text);
-      }
-    }
+  if (role === "assistant") {
+    // Antes: speak(text);
+    speakFromApi(text);
+  }
+}
 
     function setLoading(state) {
       const btn = document.getElementById("sendBtn");
