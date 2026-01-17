@@ -948,6 +948,7 @@
       }
     });
 
+    // Mic: al terminar de hablar, manda automáticamente a Esteborg
     function setupVoiceInput() {
       if (!("webkitSpeechRecognition" in window) && !("SpeechRecognition" in window)) {
         if (micBtn) micBtn.style.display = "none";
@@ -963,10 +964,10 @@
 
       let isRecording = false;
 
-      function setRecording(r) {
-        isRecording = r;
+      function setRecording(active) {
+        isRecording = active;
         if (!micBtn) return;
-        if (r) micBtn.classList.add("recording");
+        if (active) micBtn.classList.add("recording");
         else micBtn.classList.remove("recording");
       }
 
@@ -977,6 +978,7 @@
             setRecording(false);
           } else {
             try {
+              recognition.lang = currentLang === "en" ? "en-US" : "es-MX";
               recognition.start();
               setRecording(true);
             } catch (e) {
@@ -987,12 +989,22 @@
       }
 
       recognition.onresult = (event) => {
-        const transcript = event.results[0][0].transcript;
+        const transcript = event.results[0][0].transcript.trim();
+        if (!transcript) return;
         userMsgInput.value = transcript;
+        setRecording(false);
+        recognition.stop();
+        // Enviar automáticamente lo que se dictó
+        sendMessage();
       };
 
-      recognition.onerror = () => setRecording(false);
-      recognition.onend = () => setRecording(false);
+      recognition.onerror = () => {
+        setRecording(false);
+      };
+
+      recognition.onend = () => {
+        setRecording(false);
+      };
     }
 
     setupVoiceInput();
