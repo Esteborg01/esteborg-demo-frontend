@@ -37,7 +37,7 @@
     body {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Inter",
         "Segoe UI", sans-serif;
-      font-size: 16px;
+      font-size: 17px;
       background:
         radial-gradient(circle at top, rgba(216, 177, 90, 0.09) 0, transparent 45%),
         radial-gradient(circle at bottom, #181828 0, #050509 55%);
@@ -68,7 +68,7 @@
       display: grid;
       grid-template-columns: minmax(0, 1.2fr) minmax(0, 1.4fr);
       gap: 24px;
-      align-items: stretch;
+      align-items: flex-start;
     }
 
     @media (max-width: 900px) {
@@ -92,13 +92,13 @@
 
     h1 {
       margin: 0;
-      font-size: 26px;
+      font-size: 27px;
       line-height: 1.3;
     }
 
     .subcopy {
       margin-top: 10px;
-      font-size: 14px;
+      font-size: 15px;
       line-height: 1.7;
       color: var(--text-soft);
     }
@@ -108,7 +108,7 @@
       flex-wrap: wrap;
       gap: 8px;
       margin-top: 14px;
-      font-size: 11px;
+      font-size: 12px;
     }
 
     .badge {
@@ -148,7 +148,7 @@
       display: flex;
       flex-wrap: wrap;
       gap: 20px;
-      font-size: 12px;
+      font-size: 13px;
       color: var(--text-soft);
     }
 
@@ -165,7 +165,7 @@
     }
 
     .metric-value {
-      font-size: 14px;
+      font-size: 15px;
       color: var(--text-main);
     }
 
@@ -193,8 +193,7 @@
       border: 1px solid rgba(255, 255, 255, 0.04);
       display: flex;
       flex-direction: column;
-      height: 100%;
-      min-height: 360px;
+      /* que crezca según el contenido, sin forzar min-height grande */
     }
 
     .chat-header {
@@ -289,7 +288,7 @@
       transition:
         transform 0.08s ease-out,
         box-shadow 0.08s ease-out,
-        background 0.08s ease-out,
+        background 0.08s.ease-out,
         border-color 0.08s ease-out;
     }
 
@@ -302,26 +301,11 @@
       background: rgba(2, 2, 8, 0.97);
       border-radius: 12px;
       padding: 10px 10px 8px;
-      max-height: 420px;
-      flex: 1;
-      overflow-y: auto;
-      scrollbar-width: thin;
-      scrollbar-color: rgba(216, 177, 90, 0.7) transparent;
+      /* sin max-height ni overflow, dejamos que crezca y haga scroll la página */
+      flex: none;
+      overflow-y: visible;
       border: 1px solid rgba(255, 255, 255, 0.04);
       margin-top: 8px;
-    }
-
-    .chat-box::-webkit-scrollbar {
-      width: 6px;
-    }
-
-    .chat-box::-webkit-scrollbar-track {
-      background: transparent;
-    }
-
-    .chat-box::-webkit-scrollbar-thumb {
-      background: rgba(216, 177, 90, 0.7);
-      border-radius: 999px;
     }
 
     .bubble-user,
@@ -331,7 +315,7 @@
       padding: 10px 13px 9px;
       border-radius: 13px;
       font-size: 18px;
-      line-height: 1.5;
+      line-height: 1.6;
     }
 
     .bubble-user {
@@ -368,7 +352,7 @@
       text-decoration: underline;
     }
 
-    /* Starters / iniciadores — arriba del chat */
+    /* Starters / iniciadores */
     .starters {
       margin-top: 4px;
       display: flex;
@@ -385,7 +369,7 @@
         rgba(5, 5, 12, 0.96)
       );
       color: var(--text-soft);
-      font-size: 12px;
+      font-size: 13px;
       padding: 7px 11px;
       cursor: pointer;
       white-space: nowrap;
@@ -433,7 +417,7 @@
 
     .input-row input::placeholder {
       color: #6f6f80;
-      font-size: 14px;
+      font-size: 15px;
     }
 
     .input-row button {
@@ -484,7 +468,7 @@
       border: 1px solid var(--border-subtle);
       background: rgba(5, 5, 12, 0.92);
       color: var(--text-soft);
-      font-size: 16px;
+      font-size: 18px;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
@@ -528,7 +512,7 @@
       }
 
       h1 {
-        font-size: 23px;
+        font-size: 24px;
       }
 
       .metrics {
@@ -549,10 +533,6 @@
         gap: 18px;
       }
 
-      .chat-box {
-        max-height: 360px;
-      }
-
       .bubble-user,
       .bubble-ai {
         font-size: 17px;
@@ -560,6 +540,7 @@
 
       .input-row {
         flex-direction: column;
+        align-items: stretch;
       }
 
       .input-row button {
@@ -574,7 +555,7 @@
 <body>
   <div class="shell">
     <div class="shell-inner">
-      <!-- Columna izquierda: contexto del demo -->
+      <!-- Columna izquierda: contexto -->
       <div class="left-panel">
         <div class="eyebrow">Demo ejecutivo Esteborg</div>
         <h1>Prueba cómo Esteborg cambia tu vida para siempre.</h1>
@@ -649,7 +630,6 @@
           </div>
         </div>
 
-        <!-- Iniciadores de conversación ARRIBA del chat -->
         <div class="starters">
           <button class="starter-btn">Quiero comunicarme mejor con mi equipo sin tanta fricción.</button>
           <button class="starter-btn">Siento que no proyecto la autoridad que debería.</button>
@@ -658,7 +638,6 @@
         </div>
 
         <div id="chatBox" class="chat-box">
-          <!-- Pregunta 1: idioma -->
           <div class="bubble-ai">
             Antes de entrar a tu demo, dime: ¿en qué idioma quieres interactuar? Escribe "español" o "inglés".
           </div>
@@ -696,15 +675,17 @@
     let demoEnded = false;
     let userName = null;
 
-    // 1 = idioma, 2 = voz (solo conceptual), 3 = nombre, 4 = conversación normal
+    // 1 = idioma, 2 = voz, 3 = nombre, 4 = conversación normal
     let introStep = 1;
-
-    // Idioma de experiencia
     let currentLang = "es"; // "es" o "en"
 
-    // Estado TTS (ElevenLabs)
+    // ===== TTS (ElevenLabs) =====
     let ttsEnabled = true;
     let currentAudio = null;
+
+    // ===== STT (micrófono) =====
+    let recognition = null;
+    let isListening = false;
 
     const FIXED_PLAN_ANSWER = `✨ Qué buena pregunta.
 Puedes acceder a todos los programas y entrenamientos de Esteban desde esta página oficial:
@@ -723,7 +704,7 @@ Te recomiendo elegir según tu objetivo actual:
 
 ¿Quieres que te ayude a decidir cuál de estos tres caminos se adapta mejor a tu situación actual?`;
 
-    // ====== HELPERS ======
+    // ===== HELPERS =====
     function formatTextWithLinks(text) {
       if (!text) return "";
       const urlRegex = /(https?:\/\/[^\s]+)/g;
@@ -779,13 +760,12 @@ Te recomiendo elegir según tu objetivo actual:
       );
     }
 
-    // ====== TTS con ElevenLabs vía backend ======
+    // ===== TTS con ElevenLabs vía backend =====
     async function speak(text) {
       try {
         if (!ttsEnabled) return;
         if (!text || !text.trim()) return;
 
-        // cortar audio previo
         if (currentAudio) {
           currentAudio.pause();
           currentAudio = null;
@@ -816,7 +796,7 @@ Te recomiendo elegir según tu objetivo actual:
       }
     }
 
-    // ====== UI HELPERS ======
+    // ===== UI HELPERS =====
     function appendMessage(role, text) {
       const bubble = document.createElement("div");
       bubble.className = role === "user" ? "bubble-user" : "bubble-ai";
@@ -867,7 +847,73 @@ Te recomiendo elegir según tu objetivo actual:
       label.textContent = `Demo activa · ${remaining} interacciones restantes`;
     }
 
-    // ====== LÓGICA PRINCIPAL ======
+    // ===== STT (micrófono) =====
+    function initRecognition() {
+      const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SR) {
+        console.warn("SpeechRecognition no soportado en este navegador");
+        return null;
+      }
+      const rec = new SR();
+      rec.lang = currentLang === "en" ? "en-US" : "es-MX";
+      rec.interimResults = false;
+      rec.maxAlternatives = 1;
+      return rec;
+    }
+
+    function startListening() {
+      const voiceBtn = document.getElementById("voiceBtn");
+      if (!recognition) {
+        recognition = initRecognition();
+        if (!recognition) {
+          alert(
+            "Tu navegador no soporta reconocimiento de voz. Puedes seguir escribiendo tus mensajes."
+          );
+          return;
+        }
+      }
+
+      recognition.lang = currentLang === "en" ? "en-US" : "es-MX";
+
+      recognition.onstart = () => {
+        isListening = true;
+        voiceBtn.classList.add("listening");
+      };
+
+      recognition.onerror = (event) => {
+        console.error("Error en reconocimiento de voz:", event.error);
+        isListening = false;
+        voiceBtn.classList.remove("listening");
+      };
+
+      recognition.onend = () => {
+        isListening = false;
+        voiceBtn.classList.remove("listening");
+      };
+
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript || "";
+        const input = document.getElementById("userMsg");
+        input.value = transcript;
+        input.focus();
+      };
+
+      try {
+        recognition.start();
+      } catch (e) {
+        console.error("Error al iniciar reconocimiento:", e);
+      }
+    }
+
+    function toggleListening() {
+      if (!recognition || !isListening) {
+        startListening();
+      } else {
+        recognition.stop();
+      }
+    }
+
+    // ===== LÓGICA PRINCIPAL =====
     async function sendMessage() {
       if (isSending || demoEnded) return;
 
@@ -877,9 +923,8 @@ Te recomiendo elegir según tu objetivo actual:
 
       appendMessage("user", message);
 
-      // === ONBOARDING ===
+      // ONBOARDING: paso 1 (idioma)
       if (introStep === 1) {
-        // idioma
         currentLang = detectLangChoice(message);
 
         let q2;
@@ -904,9 +949,9 @@ Te recomiendo elegir según tu objetivo actual:
         return;
       }
 
+      // ONBOARDING: paso 2 (voz)
       if (introStep === 2) {
-        // voz (conceptual, pero la voz real la controla ElevenLabs en el backend)
-        detectVoiceGenderChoice(message); // por si luego decidimos usarlo
+        detectVoiceGenderChoice(message); // reservado para futuro
 
         let q3;
         if (currentLang === "en") {
@@ -928,8 +973,8 @@ Te recomiendo elegir según tu objetivo actual:
         return;
       }
 
+      // ONBOARDING: paso 3 (nombre)
       if (introStep === 3) {
-        // nombre
         userName = message;
 
         let followUp;
@@ -960,7 +1005,7 @@ Te recomiendo elegir según tu objetivo actual:
         return;
       }
 
-      // === FIN ONBOARDING / MODO NORMAL ===
+      // FIN DE ONBOARDING → modo normal
 
       // Pregunta sobre contratar plan → respuesta fija
       if (isPlanQuestion(message)) {
@@ -1027,7 +1072,7 @@ Te recomiendo elegir según tu objetivo actual:
         } else {
           appendMessage(
             "assistant",
-            "No recibí respuesta del servidor. Intenta de nuevo en un momento."
+            "Hubo un problema de conexión. Vuelve a intentar en unos segundos."
           );
         }
       } catch (err) {
@@ -1043,7 +1088,7 @@ Te recomiendo elegir según tu objetivo actual:
       }
     }
 
-    // ====== EVENTOS UI ======
+    // ===== EVENTOS UI =====
     function setupUI() {
       const sendBtn = document.getElementById("sendBtn");
       const input = document.getElementById("userMsg");
@@ -1073,22 +1118,21 @@ Te recomiendo elegir según tu objetivo actual:
         }
       });
 
-      // Mic: por ahora sin STT, solo placeholder
+      // Micrófono
       voiceBtn.addEventListener("click", () => {
-        alert("Pronto podrás hablarle a Esteborg con tu voz. Por ahora escribe tu mensaje 😉");
+        toggleListening();
       });
 
+      // Starters → rellenan el input
       starters.forEach((btn) => {
         btn.addEventListener("click", () => {
           const text = btn.textContent || "";
-          const input = document.getElementById("userMsg");
           input.value = text;
           input.focus();
         });
       });
     }
 
-    // Init
     document.addEventListener("DOMContentLoaded", () => {
       setupUI();
     });
