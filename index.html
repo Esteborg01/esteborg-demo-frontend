@@ -902,64 +902,33 @@ function renderStarters() {
 }
 
     function speak(text) {
-      if (!ttsEnabled || !synth || !text) return;
-      try {
-        if (currentUtterance) {
-          synth.cancel();
-        }
-        const utter = new SpeechSynthesisUtterance(text);
-        utter.lang = getSpeechLangCode();
-        if (selectedVoice) {
-          utter.voice = selectedVoice;
-        }
+      // ====== TTS EXTERNO (ElevenLabs vía backend) ======
+async function speakFromApi(text) {
+  if (!ttsEnabled || !text) return;
+  try {
+    const res = await fetch("https://esteborgcom7-backend.onrender.com/api/tts", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text, lang: currentLang })
+    });
 
-        // Voz masculina ejecutiva
-     if (getSpeechLangCode().startsWith("es")) {
-  utter.rate = 1.0;   // ritmo natural
-  utter.pitch = 0.9;  // grave pero no cavernoso
-} else {
-  utter.rate = 1.0;
-  utter.pitch = 0.9;
+    if (!res.ok) {
+      console.error("TTS API error", await res.text());
+      // Fallback al TTS del navegador si algo falla
+      speak(text);
+      return;
+    }
+
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const audio = new Audio(url);
+    audio.play();
+  } catch (e) {
+    console.error("Error al reproducir TTS externo:", e);
+    // Fallback
+    speak(text);
+  }
 }
-
-        currentUtterance = utter;
-        synth.speak(utter);
-        utter.onend = () => {
-          currentUtterance = null;
-        };
-      } catch (e) {
-        console.error("Error TTS:", e);
-      }
-    }
-
-    function setupTTS() {
-      const ttsBtn = document.getElementById("ttsToggleBtn");
-      if (!ttsBtn) return;
-
-      if (!synth) {
-        ttsBtn.style.display = "none";
-        ttsEnabled = false;
-        return;
-      }
-
-      loadVoices();
-      if (typeof speechSynthesis !== "undefined") {
-        speechSynthesis.onvoiceschanged = loadVoices;
-      }
-
-      ttsBtn.addEventListener("click", () => {
-        ttsEnabled = !ttsEnabled;
-        if (!ttsEnabled && synth.speaking) {
-          synth.cancel();
-        }
-        ttsBtn.textContent = ttsEnabled ? "🔊" : "🔈";
-        if (ttsEnabled) {
-          ttsBtn.classList.add("on");
-        } else {
-          ttsBtn.classList.remove("on");
-        }
-      });
-    }
 
     // ====== CHAT UI ======
     function appendMessage(role, text) {
