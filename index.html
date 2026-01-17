@@ -598,7 +598,7 @@
 <body>
   <div class="shell">
     <div class="shell-inner">
-      <!-- Columna izquierda: contexto del demo -->
+      <!-- Columna izquierda -->
       <div class="left-panel">
         <div class="eyebrow">Demo ejecutivo Esteborg</div>
         <h1>Prueba cómo Esteborg cambia tu vida para siempre.</h1>
@@ -673,10 +673,14 @@
           </div>
         </div>
 
-       <div id="startersContainer" class="starters"></div>
+        <div class="starters">
+          <button class="starter-btn">Siento que no proyecto la autoridad que debería.</button>
+          <button class="starter-btn">Me trabo cuando tengo que decir cosas difíciles.</button>
+          <button class="starter-btn">Quiero más claridad mental para tomar decisiones importantes.</button>
+          <button class="starter-btn">Cómo mejora la IA en mi comunicación.</button>
+        </div>
 
         <div id="chatBox" class="chat-box">
-          <!-- Pregunta 1: idioma -->
           <div class="bubble-ai">
             Antes de entrar a tu demo, dime: ¿en qué idioma quieres interactuar? Escribe "español" o "inglés".
           </div>
@@ -713,65 +717,113 @@
 
     // 1 = idioma, 2 = nombre, 3 = conversación normal
     let introStep = 1;
-
-    let currentLang = "es"; // "es" o "en"
+    let currentLang = "es";
 
     function getSpeechLangCode() {
-      if (currentLang === "en") return "en-US";
-      return "es-MX";
+      return currentLang === "en" ? "en-US" : "es-MX";
     }
 
-    // ====== TTS (voz Esteborg masculina ejecutiva) ======
+    // ===== TTS navegador (fallback) =====
     let synth = window.speechSynthesis || null;
     let currentUtterance = null;
     let ttsEnabled = true;
-    let voices = [];
     let selectedVoice = null;
 
-    // ====== ASR (reconocimiento de voz) ======
-    let recognition = null;
-    let isListening = false;
+    function loadVoices() {
+      if (!synth) return;
+      const allVoices = synth.getVoices() || [];
+      if (!allVoices.length) return;
+      const lang = getSpeechLangCode().split("-")[0]; // es / en
+      const candidates = allVoices.filter(
+        (v) => v.lang && v.lang.toLowerCase().startsWith(lang)
+      );
+      selectedVoice = candidates[0] || null;
+      if (selectedVoice) {
+        console.log("🔊 Voz fallback seleccionada:", selectedVoice.name, selectedVoice.lang);
+      }
+    }
 
-    const FIXED_PLAN_ANSWER = `✨ Qué buena pregunta.
-Puedes acceder a todos los programas y entrenamientos de Esteban desde esta página oficial:
-👉 https://membersvip.esteborg.live/
+    function speak(text) {
+      if (!ttsEnabled || !synth || !text) return;
+      try {
+        if (currentUtterance) {
+          synth.cancel();
+        }
+        const utter = new SpeechSynthesisUtterance(text);
+        utter.lang = getSpeechLangCode();
+        if (selectedVoice) utter.voice = selectedVoice;
 
-Y además, hoy tienes un cupón exclusivo del 50% de descuento para cualquier plan:
-🎁 EsteborgVIPOffer
+        if (getSpeechLangCode().startsWith("es")) {
+          utter.rate = 0.95;
+          utter.pitch = 0.82;
+        } else {
+          utter.rate = 1.0;
+          utter.pitch = 0.9;
+        }
 
-Te recomiendo elegir según tu objetivo actual:
+        currentUtterance = utter;
+        synth.speak(utter);
+        utter.onend = () => {
+          currentUtterance = null;
+        };
+      } catch (e) {
+        console.error("Error TTS fallback:", e);
+      }
+    }
 
-🧠 Entrenador Inteligente de Comunicación Emocional (7 días) → para desarrollar calma, empatía y expresión consciente.
+    // ===== TTS externo (ElevenLabs vía backend) =====
+    async function speakFromApi(text) {
+      if (!ttsEnabled || !text) return;
+      try {
+        const res = await fetch("https://esteborgcom7-backend.onrender.com/api/tts", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text, lang: currentLang })
+        });
 
-💬 Entrenador Inteligente de Ventas Conscientes (7 días) → si buscas conectar mejor con tus clientes y comunicar valor.
+        if (!res.ok) {
+          console.error("TTS API error", await res.text());
+          speak(text); // fallback
+          return;
+        }
 
-💎 O el bundle completo, con ambos entrenamientos y una sesión personalizada con Esteban.
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const audio = new Audio(url);
+        audio.play();
+      } catch (e) {
+        console.error("Error al reproducir TTS externo:", e);
+        speak(text); // fallback
+      }
+    }
 
-¿Quieres que te ayude a decidir cuál de estos tres caminos se adapta mejor a tu situación actual?`;
+    function setupTTS() {
+      const ttsBtn = document.getElementById("ttsToggleBtn");
+      if (!ttsBtn) return;
 
-    // ====== STARTERS CONFIGURABLES ======
-const STARTERS = [
-  "Siento que no proyecto la autoridad que debería.",
-  "Me trabo cuando tengo que decir cosas difíciles.",
-  "Quiero más claridad mental para tomar decisiones importantes.",
-  "Cómo mejora la IA mi comunicación."
-];
+      if (!synth) {
+        ttsBtn.style.display = "none";
+        ttsEnabled = true; // igual usamos ElevenLabs
+        return;
+      }
 
-function renderStarters() {
-  const container = document.getElementById("startersContainer");
-  if (!container) return;
+      loadVoices();
+      if (typeof speechSynthesis !== "undefined") {
+        speechSynthesis.onvoiceschanged = loadVoices;
+      }
 
-  container.innerHTML = "";
+      ttsBtn.addEventListener("click", () => {
+        ttsEnabled = !ttsEnabled;
+        if (!ttsEnabled && synth && synth.speaking) {
+          synth.cancel();
+        }
+        ttsBtn.textContent = ttsEnabled ? "🔊" : "🔈";
+        if (ttsEnabled) ttsBtn.classList.add("on");
+        else ttsBtn.classList.remove("on");
+      });
+    }
 
-  STARTERS.forEach((text) => {
-    const btn = document.createElement("button");
-    btn.className = "starter-btn";
-    btn.textContent = text;
-    container.appendChild(btn);
-  });
-}
-
-    // ====== HELPERS ======
+    // ===== Helpers =====
     function formatTextWithLinks(text) {
       if (!text) return "";
       const urlRegex = /(https?:\/\/[^\s]+)/g;
@@ -792,145 +844,23 @@ function renderStarters() {
       return "es";
     }
 
-    // ====== TTS: voces ======
-    function loadVoices() {
-      if (!synth) return;
-      voices = synth.getVoices() || [];
-      selectBestVoice();
-    }
+    const FIXED_PLAN_ANSWER = `✨ Qué buena pregunta.
+Puedes acceder a todos los programas y entrenamientos de Esteban desde esta página oficial:
+👉 https://membersvip.esteborg.live/
 
-    function selectBestVoice() {
-  if (!synth) return;
+Y además, hoy tienes un cupón exclusivo del 50% de descuento para cualquier plan:
+🎁 EsteborgVIPOffer
 
-  const allVoices = synth.getVoices();
-  if (!allVoices || !allVoices.length) return;
+Te recomiendo elegir según tu objetivo actual:
 
-  const lang = getSpeechLangCode(); // es-MX o en-US
-  const base = lang.split("-")[0];   // "es" o "en"
+🧠 Entrenador Inteligente de Comunicación Emocional (7 días) → para desarrollar calma, empatía y expresión consciente.
 
-  let candidates = allVoices.filter(
-    (v) => v.lang && v.lang.toLowerCase().startsWith(base)
-  );
+💬 Entrenador Inteligente de Ventas Conscientes (7 días) → si buscas conectar mejor con tus clientes y comunicar valor.
 
-  if (!candidates.length) {
-    selectedVoice = null;
-    return;
-  }
+💎 O el bundle completo, con ambos entrenamientos y una sesión personalizada con Esteban.
 
-  // 🎯 ESPAÑOL: priorizar Reed → Eddy → Grandpa (eliminar Rocko)
-  if (base === "es") {
-    const lower = (s) => (s || "").toLowerCase();
+¿Quieres que te ayude a decidir cuál de estos tres caminos se adapta mejor a tu situación actual?`;
 
-    const mexicanVoices = candidates.filter((v) =>
-      lower(v.lang).includes("es-mx")
-    );
-
-    const preferredOrder = ["reed", "eddy", "grandpa"];
-
-    // 1) Buscar en es-MX por orden de preferencia
-    for (const namePart of preferredOrder) {
-      const match = mexicanVoices.find((v) =>
-        lower(v.name).includes(namePart)
-      );
-      if (match) {
-        selectedVoice = match;
-        console.log(
-          "🔊 Voz seleccionada Esteborg (MX preferida):",
-          selectedVoice.name,
-          selectedVoice.lang
-        );
-        return;
-      }
-    }
-
-    // 2) Si no hay es-MX, buscar español que no sea femenino ni Google español
-    const blocked = ["mónica", "monica", "paulina", "sandy", "shelley", "grandma", "rocko"];
-    let filtered = candidates.filter((v) => {
-      const nm = lower(v.name);
-      if (blocked.some((b) => nm.includes(b))) return false;
-      if (nm.includes("google español")) return false;
-      return true;
-    });
-
-    if (!filtered.length) {
-      filtered = candidates;
-    }
-
-    selectedVoice = filtered[0];
-    console.log(
-      "🔊 Voz seleccionada Esteborg (fallback ES):",
-      selectedVoice.name,
-      selectedVoice.lang
-    );
-    return;
-  }
-
-  // 🌎 INGLÉS
-  if (base === "en") {
-    const maleNamesEn = [
-      "google uk english male",
-      "albert",
-      "daniel",
-      "fred",
-      "junior",
-      "ralph"
-    ];
-
-    let best =
-      candidates.find((v) =>
-        maleNamesEn.some((n) =>
-          (v.name || "").toLowerCase().includes(n)
-        )
-      ) || candidates[0];
-
-    selectedVoice = best;
-    console.log(
-      "🔊 Voz seleccionada Esteborg (EN):",
-      selectedVoice && selectedVoice.name,
-      selectedVoice && selectedVoice.lang
-    );
-    return;
-  }
-
-  // Fallback
-  selectedVoice = candidates[0];
-  console.log(
-    "🔊 Voz seleccionada Esteborg (fallback):",
-    selectedVoice && selectedVoice.name,
-    selectedVoice && selectedVoice.lang
-  );
-}
-
-    function speak(text) {
-      // ====== TTS EXTERNO (ElevenLabs vía backend) ======
-async function speakFromApi(text) {
-  if (!ttsEnabled || !text) return;
-  try {
-    const res = await fetch("https://esteborgcom7-backend.onrender.com/api/tts", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text, lang: currentLang })
-    });
-
-    if (!res.ok) {
-      console.error("TTS API error", await res.text());
-      // Fallback al TTS del navegador si algo falla
-      speak(text);
-      return;
-    }
-
-    const blob = await res.blob();
-    const url = URL.createObjectURL(blob);
-    const audio = new Audio(url);
-    audio.play();
-  } catch (e) {
-    console.error("Error al reproducir TTS externo:", e);
-    // Fallback
-    speak(text);
-  }
-}
-
-    // ====== CHAT UI ======
     function appendMessage(role, text) {
       const bubble = document.createElement("div");
       bubble.className = role === "user" ? "bubble-user" : "bubble-ai";
@@ -943,14 +873,13 @@ async function speakFromApi(text) {
         bubble.textContent = text;
       }
 
-       box.appendChild(bubble);
-  box.scrollTop = box.scrollHeight;
+      box.appendChild(bubble);
+      box.scrollTop = box.scrollHeight;
 
-  if (role === "assistant") {
-    // Antes: speak(text);
-    speakFromApi(text);
-  }
-}
+      if (role === "assistant") {
+        speakFromApi(text);
+      }
+    }
 
     function setLoading(state) {
       const btn = document.getElementById("sendBtn");
@@ -1012,9 +941,8 @@ async function speakFromApi(text) {
 
       appendMessage("user", message);
 
-      // ===== ONBOARDING =====
+      // Onboarding
       if (introStep === 1) {
-        // idioma
         currentLang = detectLangChoice(message);
 
         let q2;
@@ -1032,14 +960,12 @@ async function speakFromApi(text) {
         history.push({ role: "assistant", content: q2 });
 
         introStep = 2;
-        selectBestVoice();
         input.value = "";
         input.focus();
         return;
       }
 
       if (introStep === 2) {
-        // nombre
         userName = message;
 
         let followUp;
@@ -1069,8 +995,7 @@ async function speakFromApi(text) {
         return;
       }
 
-      // ===== MODO NORMAL =====
-
+      // Modo normal
       if (isPlanQuestion(message)) {
         appendMessage("assistant", FIXED_PLAN_ANSWER);
 
@@ -1099,7 +1024,7 @@ async function speakFromApi(text) {
         message: finalMessage,
         userName: userName || "Invitado",
         history: history,
-        lang: currentLang // 👈 alimenta el backend
+        lang: currentLang
       };
 
       try {
@@ -1149,6 +1074,10 @@ async function speakFromApi(text) {
       input.focus();
       setLoading(false);
     }
+
+    // ===== Voz de entrada (micrófono) =====
+    let recognition = null;
+    let isListening = false;
 
     function setupVoiceInput() {
       const VoiceRecognition =
@@ -1217,6 +1146,7 @@ async function speakFromApi(text) {
       });
     }
 
+    // ===== Listeners principales =====
     document.getElementById("sendBtn").addEventListener("click", sendMessage);
 
     document.getElementById("userMsg").addEventListener("keypress", (e) => {
@@ -1226,34 +1156,26 @@ async function speakFromApi(text) {
       }
     });
 
-    const startersContainer = document.getElementById("startersContainer");
-if (startersContainer) {
-  startersContainer.addEventListener("click", (e) => {
-    const btn = e.target.closest(".starter-btn");
-    if (!btn) return;
-    if (demoEnded || isSending) return;
-
-    const input = document.getElementById("userMsg");
-
-    if (introStep < 3) {
-      input.value = "";
-      input.focus();
-      appendMessage(
-        "assistant",
-        "Primero terminemos las preguntas iniciales y luego usamos tus retos como ejemplo."
-      );
-      return;
-    }
-
-    input.value = btn.textContent;
-    sendMessage();
-  });
-}
-
+    document.querySelectorAll(".starter-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        if (demoEnded || isSending) return;
+        const input = document.getElementById("userMsg");
+        if (introStep < 3) {
+          input.value = "";
+          input.focus();
+          appendMessage(
+            "assistant",
+            "Primero terminemos las preguntas iniciales y luego usamos tus retos como ejemplo."
+          );
+          return;
+        }
+        input.value = btn.textContent;
+        sendMessage();
+      });
+    });
 
     setupTTS();
-setupVoiceInput();
-renderStarters();
+    setupVoiceInput();
   </script>
 </body>
 </html>
