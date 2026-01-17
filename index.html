@@ -3,871 +3,1003 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mini Diagnóstico Esteborg</title>
+  <title>Demo Esteborg Ejecutivo</title>
 
   <style>
     :root {
       --bg-main: #050509;
-      --accent: #f1ca63;
-      --accent-strong: #f6e29e;
-      --accent-alt: #8fd8ff;
-      --text-main: #f5f5ff;
-      --text-soft: #c3c3d8;
-      --text-dim: #7e7e9c;
-      --border-subtle: #25253a;
-      --card-bg: #0b0b16;
-      --card-inner: #10101d;
-      --radius-lg: 20px;
-      --radius-pill: 999px;
+      --bg-gradient-start: #151521;
+      --bg-gradient-end: #050509;
+      --card-bg: #0c0c14;
+      --card-inner: #101018;
+      --accent: #d8b15a;
+      --accent-soft: #b89446;
+      --accent-soft-2: #8c6a2e;
+      --text-main: #f7f7fb;
+      --text-soft: #a7a7bc;
+      --text-dim: #77778a;
+      --border-subtle: rgba(255, 255, 255, 0.06);
+      --border-strong: rgba(216, 177, 90, 0.45);
+      --radius-lg: 22px;
+      --radius-md: 14px;
     }
 
     * {
       box-sizing: border-box;
     }
 
-    body {
+    html, body {
       margin: 0;
-      min-height: 100vh;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
-        "Inter", sans-serif;
+      padding: 0;
+      height: 100%;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Inter",
+        "Segoe UI", sans-serif;
       font-size: 16px;
-      background: radial-gradient(circle at top, #28224b 0, #050509 55%, #020208 100%);
+      background:
+        radial-gradient(circle at top, rgba(216, 177, 90, 0.09) 0, transparent 45%),
+        radial-gradient(circle at bottom, #181828 0, #050509 55%);
       color: var(--text-main);
       display: flex;
+      min-height: 100vh;
+      align-items: center;
       justify-content: center;
-      align-items: flex-start;
-      padding: 24px 12px 40px;
+      padding: 24px;
     }
 
-    .app {
+    .shell {
       width: 100%;
-      max-width: 960px;
-    }
-
-    .hero {
-      text-align: center;
-      margin-bottom: 22px;
-    }
-
-    .hero-logo {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 10px;
-    }
-
-    .hero-logo-mark {
-      width: 44px;
-      height: 44px;
-      border-radius: 999px;
-      background: radial-gradient(circle at 30% 0, #f8e089 0, #f1c967 18%, #8c46ff 52%, #32127b 90%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      max-width: 1040px;
+      background: radial-gradient(circle at top left, #181828 0, #050509 60%);
+      border-radius: var(--radius-lg);
+      padding: 26px 26px 22px;
+      position: relative;
+      overflow: hidden;
       box-shadow:
-        0 0 0 1px rgba(0, 0, 0, 0.8),
-        0 10px 30px rgba(0, 0, 0, 0.75);
+        0 26px 80px rgba(0, 0, 0, 0.8),
+        0 0 0 1px rgba(216, 177, 90, 0.2);
+      border: 1px solid rgba(216, 177, 90, 0.35);
     }
 
-    .hero-logo-mark svg {
-      width: 24px;
-      height: 24px;
+    .shell-inner {
+      position: relative;
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1.4fr);
+      gap: 24px;
+      align-items: stretch;
     }
 
-    .hero-logo-text {
-      font-size: 1.05rem;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      font-weight: 650;
-    }
-
-    .hero-logo-text span {
-      color: var(--accent-strong);
-    }
-
-    .hero-title {
-      font-size: clamp(1.6rem, 2.5vw, 1.9rem);
-      line-height: 1.35;
-      margin: 0 0 8px;
-      font-weight: 640;
-    }
-
-    .hero-title span {
-      color: var(--accent-strong);
-    }
-
-    .hero-sub {
-      font-size: 1rem;
-      color: var(--text-soft);
-      max-width: 540px;
-      margin: 0 auto;
-    }
-
-    .hero-sub strong {
-      color: var(--accent-strong);
-    }
-
-    .chat-card {
-      margin-top: 20px;
-      border-radius: 24px;
-      background: radial-gradient(circle at top left, #262042 0, #050509 60%);
-      border: 1px solid rgba(140, 139, 196, 0.55);
-      box-shadow: 0 18px 60px rgba(0, 0, 0, 0.8);
-      padding: 18px 16px 16px;
-    }
-
-    @media (min-width: 900px) {
-      .chat-card {
-        padding: 20px 18px 18px;
+    @media (max-width: 900px) {
+      .shell-inner {
+        grid-template-columns: minmax(0, 1fr);
       }
     }
 
-    .chat-inner {
+    /* Columna izquierda: info de valor */
+    .left-panel {
+      padding-right: 10px;
+    }
+
+    .eyebrow {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--accent-soft);
+      margin-bottom: 6px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 26px;
+      line-height: 1.3;
+    }
+
+    .subcopy {
+      margin-top: 10px;
+      font-size: 14px;
+      line-height: 1.7;
+      color: var(--text-soft);
+    }
+
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+      font-size: 11px;
+    }
+
+    .badge {
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(216, 177, 90, 0.4);
+      background: radial-gradient(
+        circle at top left,
+        rgba(216, 177, 90, 0.16),
+        rgba(5, 5, 12, 0.95)
+      );
+      color: var(--text-soft);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .badge-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: #06d39a;
+      box-shadow: 0 0 10px rgba(6, 211, 154, 0.8);
+    }
+
+    .metrics {
+      margin-top: 16px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: linear-gradient(
+        135deg,
+        rgba(216, 177, 90, 0.12),
+        rgba(7, 7, 16, 0.96)
+      );
+      border: 1px solid rgba(216, 177, 90, 0.38);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      font-size: 12px;
+      color: var(--text-soft);
+    }
+
+    .metric-item {
+      min-width: 120px;
+    }
+
+    .metric-label {
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-size: 10px;
+      color: var(--text-dim);
+      margin-bottom: 4px;
+    }
+
+    .metric-value {
+      font-size: 14px;
+      color: var(--text-main);
+    }
+
+    .metric-tag {
+      font-size: 11px;
+      color: var(--accent-soft);
+      margin-top: 2px;
+    }
+
+    .footnote-left {
+      margin-top: 14px;
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+
+    .footnote-left span {
+      color: var(--accent-soft);
+    }
+
+    /* Columna derecha: chat premium */
+    .chat-wrapper {
+      background: radial-gradient(circle at top right, #202030 0, #08080f 55%);
       border-radius: 18px;
-      background: linear-gradient(145deg, #0c0c19, #090915);
-      border: 1px solid rgba(111, 111, 180, 0.6);
-      padding: 16px 15px 14px;
+      padding: 16px 14px 14px;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      min-height: 360px;
     }
 
     .chat-header {
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      gap: 10px;
-      margin-bottom: 12px;
+      justify-content: space-between;
+      font-size: 13px;
+      color: var(--text-soft);
+      margin-bottom: 10px;
     }
 
     .chat-header-left {
       display: flex;
-      flex-direction: column;
-      gap: 3px;
-    }
-
-    .chat-title {
-      font-size: 1rem;
-      font-weight: 600;
-    }
-
-    .chat-subtitle {
-      font-size: 0.9rem;
-      color: var(--text-dim);
+      align-items: center;
+      gap: 10px;
     }
 
     .chat-header-right {
-      font-size: 0.8rem;
-      color: var(--text-dim);
       display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .avatar {
+      width: 30px;
+      height: 30px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 0%, #f5f5f5 0, #d8b15a 40%, #3a2e1a 100%);
+      border: 1px solid rgba(0, 0, 0, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 700;
+      color: #050509;
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1),
+                  0 14px 25px rgba(0, 0, 0, 0.75);
+    }
+
+    .avatar span {
+      transform: translateY(0.5px);
+    }
+
+    .chat-title-block {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .chat-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .chat-subtitle {
+      font-size: 11px;
+      color: var(--text-soft);
+    }
+
+    .pill-demo {
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(8, 218, 146, 0.12);
+      border: 1px solid rgba(8, 218, 146, 0.5);
+      font-size: 11px;
+      display: inline-flex;
       align-items: center;
       gap: 6px;
     }
 
-    .dot-live {
-      width: 9px;
-      height: 9px;
+    .pill-dot {
+      width: 7px;
+      height: 7px;
       border-radius: 999px;
-      background: var(--accent-strong);
-      box-shadow: 0 0 0 4px rgba(241, 202, 99, 0.28);
+      background: #08da92;
+      box-shadow: 0 0 8px rgba(8, 218, 146, 0.9);
+    }
+
+    .tts-toggle {
+      border-radius: 999px;
+      border: 1px solid var(--border-subtle);
+      background: rgba(5, 5, 12, 0.92);
+      color: var(--text-soft);
+      padding: 6px 9px;
+      font-size: 16px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+      transition:
+        transform 0.08s ease-out,
+        box-shadow 0.08s ease-out,
+        background 0.08s ease-out,
+        border-color 0.08s ease-out;
+    }
+
+    .tts-toggle.on {
+      border-color: rgba(216, 177, 90, 0.8);
+      box-shadow: 0 0 12px rgba(216, 177, 90, 0.7);
     }
 
     .chat-box {
+      background: rgba(2, 2, 8, 0.97);
       border-radius: 12px;
-      padding: 12px 10px;
-      background: radial-gradient(circle at top, rgba(32, 32, 64, 0.9) 0, rgba(8, 9, 20, 0.98) 42%);
-      border: 1px solid rgba(84, 84, 133, 0.8);
-      min-height: 240px;
-      max-height: 380px;
+      padding: 10px 10px 8px;
+      max-height: 420px;
+      flex: 1;
       overflow-y: auto;
-      box-shadow:
-        inset 0 0 0 1px rgba(5, 5, 12, 0.8),
-        0 14px 40px rgba(0, 0, 0, 0.75);
-      scroll-behavior: smooth;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(216, 177, 90, 0.7) transparent;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      margin-top: 8px;
     }
 
     .chat-box::-webkit-scrollbar {
       width: 6px;
     }
 
+    .chat-box::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
     .chat-box::-webkit-scrollbar-thumb {
-      background: rgba(110, 110, 160, 0.7);
+      background: rgba(216, 177, 90, 0.7);
       border-radius: 999px;
     }
 
-    .msg-row {
-      display: flex;
-      margin-bottom: 10px;
-    }
-
-    .msg-row.user {
-      justify-content: flex-end;
-    }
-
-    .bubble {
-      max-width: 82%;
-      padding: 8px 11px 8px;
+    .bubble-user,
+    .bubble-ai {
+      max-width: 96%;
+      margin: 9px 0;
+      padding: 10px 13px 9px;
       border-radius: 13px;
-      font-size: 0.9rem;
+      font-size: 18px;
       line-height: 1.5;
-      border: 1px solid transparent;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.65);
-      white-space: pre-wrap;
-      word-wrap: break-word;
     }
 
     .bubble-user {
-      background: linear-gradient(135deg, #f1ca63, #f6e29e);
-      color: #1c1407;
-      border-color: rgba(115, 85, 34, 0.52);
-    }
-
-    .bubble-ai {
-      background: radial-gradient(circle at top left, rgba(17, 18, 32, 0.98), rgba(11, 12, 24, 0.98));
-      color: var(--text-main);
-      border-color: rgba(135, 134, 202, 0.62);
-    }
-
-    .bubble-ai a {
-      color: var(--accent-alt);
-      text-decoration: none;
-      border-bottom: 1px dotted rgba(143, 216, 210, 0.7);
-    }
-
-    .bubble-label {
-      font-size: 0.74rem;
-      text-transform: uppercase;
-      letter-spacing: 0.14em;
-      margin-bottom: 4px;
-      color: var(--text-dim);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .bubble-label-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 999px;
-      background: var(--accent);
-    }
-
-    .bubble-meta {
-      font-size: 0.75rem;
-      color: var(--text-dim);
-      margin-top: 3px;
+      margin-left: auto;
+      background: linear-gradient(135deg, #26263c, #131320);
+      color: #f9f9ff;
+      border: 1px solid rgba(255, 255, 255, 0.08);
       text-align: right;
     }
 
-    .starter-row {
-      margin-top: 10px;
-      margin-bottom: 8px;
+    .bubble-ai {
+      margin-right: auto;
+      background: rgba(13, 13, 24, 0.96);
+      color: #f5f5f5;
+      border: 1px solid var(--border-strong);
+      position: relative;
+      padding-top: 16px;
+    }
+
+    .bubble-ai::before {
+      content: "Esteborg";
+      position: absolute;
+      top: 3px;
+      left: 12px;
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--accent-soft);
+      opacity: 0.95;
+    }
+
+    .bubble-ai a {
+      color: var(--accent-soft);
+      text-decoration: underline;
+    }
+
+    /* Starters / iniciadores — arriba del chat */
+    .starters {
+      margin-top: 4px;
       display: flex;
       flex-wrap: wrap;
-      gap: 7px;
+      gap: 8px;
     }
 
-    .starter-chip {
+    .starter-btn {
       border-radius: 999px;
-      padding: 7px 11px;
-      font-size: 0.85rem;
-      border: 1px solid rgba(191, 190, 232, 0.46);
-      background: rgba(25, 24, 72, 0.9);
+      border: 1px solid rgba(216, 177, 90, 0.5);
+      background: radial-gradient(
+        circle at top left,
+        rgba(216, 177, 90, 0.18),
+        rgba(5, 5, 12, 0.96)
+      );
       color: var(--text-soft);
+      font-size: 12px;
+      padding: 7px 11px;
       cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
+      white-space: nowrap;
+      max-width: 100%;
+      text-align: left;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transition:
+        background 0.12s ease-out,
+        border-color 0.12s ease-out,
+        transform 0.06s ease-out;
     }
 
-    .starter-chip:hover {
-      border-color: rgba(241, 202, 99, 0.85);
-      color: var(--accent-strong);
+    .starter-btn:hover {
+      background: radial-gradient(
+        circle at top left,
+        rgba(216, 177, 90, 0.26),
+        rgba(10, 10, 18, 0.98)
+      );
+      border-color: rgba(216, 177, 90, 0.9);
+      transform: translateY(-1px);
     }
 
-    .starter-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: var(--accent);
+    .starter-btn:active {
+      transform: translateY(0);
     }
 
     .input-row {
       display: flex;
-      align-items: stretch;
-      gap: 9px;
-      margin-top: 10px;
-    }
-
-    .input-wrapper {
-      position: relative;
-      flex: 1;
-      display: flex;
-      align-items: center;
-    }
-
-    #userMsg {
-      width: 100%;
-      border-radius: var(--radius-pill);
-      border: 1px solid rgba(124, 124, 180, 0.65);
-      background: radial-gradient(circle at top left, rgba(26, 26, 52, 0.9), rgba(8, 9, 20, 0.98));
-      color: var(--text-main);
-      padding: 9px 108px 9px 14px;
-      font-size: 0.9rem;
-      outline: none;
-      box-shadow:
-        0 0 0 1px rgba(0, 0, 0, 0.7),
-        0 10px 25px rgba(0, 0, 0, 0.75);
-    }
-
-    #userMsg::placeholder {
-      color: rgba(159, 159, 210, 0.72);
-    }
-
-    .mic-btn {
-      position: absolute;
-      right: 104px;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 26px;
-      height: 26px;
-      border-radius: 999px;
-      border: 1px solid rgba(143, 216, 210, 0.7);
-      background: radial-gradient(circle at 30% 0, rgba(143, 216, 210, 0.7), #3b8a7b);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.7);
-      color: #071412;
-    }
-
-    .mic-btn svg {
-      width: 14px;
-      height: 14px;
-    }
-
-    .mic-btn.recording {
-      animation: pulse 1s infinite;
-      border-color: rgba(255, 107, 107, 0.9);
-      background: radial-gradient(circle at 30% 0, rgba(255, 143, 143, 0.85), #ff6b6b);
-      color: #220606;
-    }
-
-    @keyframes pulse {
-      0% {
-        box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.75);
-      }
-      70% {
-        box-shadow: 0 0 0 10px rgba(255, 107, 107, 0);
-      }
-      100% {
-        box-shadow: 0 0 0 0 rgba(255, 107, 107, 0);
-      }
-    }
-
-    #sendBtn {
-      border-radius: var(--radius-pill);
-      border: none;
-      padding: 0 18px;
-      font-size: 0.9rem;
-      font-weight: 560;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      background: linear-gradient(135deg, #f1ca63, #f6e29e);
-      color: #21140a;
-      cursor: pointer;
-      min-width: 140px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow:
-        0 8px 22px rgba(0, 0, 0, 0.75),
-        0 0 0 1px rgba(0, 0, 0, 0.7);
-    }
-
-    #sendBtn:disabled {
-      opacity: 0.6;
-      cursor: default;
-    }
-
-    .status-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 9px;
-      font-size: 0.85rem;
-      color: var(--text-dim);
       gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    #demoStatus {
-      display: inline-flex;
+      margin-top: 11px;
       align-items: center;
-      gap: 6px;
     }
 
-    .status-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 999px;
-      background: var(--accent-strong);
-      box-shadow: 0 0 0 4px rgba(241, 202, 99, 0.28);
+    .input-row input {
+      flex: 1;
+      padding: 12px 13px;
+      border-radius: 12px;
+      border: 1px solid var(--border-subtle);
+      background: rgba(5, 5, 12, 0.92);
+      color: var(--text-main);
+      font-size: 16px;
+      outline: none;
     }
 
-    .status-dot.ended {
-      background: #ff6b6b;
-      box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.3);
+    .input-row input::placeholder {
+      color: #6f6f80;
+      font-size: 14px;
     }
 
-    #ttsToggle {
-      border-radius: var(--radius-pill);
-      padding: 4px 11px;
-      border: 1px solid rgba(143, 216, 210, 0.8);
-      background: rgba(7, 26, 24, 0.95);
-      color: #9fe9c7;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
+    .input-row button {
+      padding: 11px 18px;
+      border-radius: 12px;
+      border: none;
+      background: linear-gradient(
+        135deg,
+        var(--accent),
+        var(--accent-soft),
+        var(--accent-soft-2)
+      );
+      color: #040308;
+      font-weight: 600;
+      font-size: 15px;
       cursor: pointer;
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
+      white-space: nowrap;
+      box-shadow: 0 12px 26px rgba(216, 177, 90, 0.55);
+      transition:
+        transform 0.08s ease-out,
+        box-shadow 0.08s ease-out,
+        filter 0.1s,
+        opacity 0.1s;
     }
 
-    #ttsToggle.off {
-      opacity: 0.58;
-      border-color: rgba(94, 93, 140, 0.9);
-      background: rgba(12, 12, 26, 0.96);
+    .input-row button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 16px 34px rgba(216, 177, 90, 0.7);
+      filter: brightness(1.04);
+    }
+
+    .input-row button:active {
+      transform: translateY(0);
+      box-shadow: 0 9px 20px rgba(216, 177, 90, 0.6);
+      filter: brightness(0.97);
+    }
+
+    .input-row button:disabled {
+      opacity: 0.7;
+      cursor: default;
+      box-shadow: 0 8px 18px rgba(216, 177, 90, 0.35);
+      transform: none;
+    }
+
+    #voiceBtn {
+      padding: 10px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--border-subtle);
+      background: rgba(5, 5, 12, 0.92);
+      color: var(--text-soft);
+      font-size: 16px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+      transition:
+        transform 0.08s ease-out,
+        box-shadow 0.08s ease-out,
+        background 0.08s ease-out,
+        border-color 0.08s ease-out;
+    }
+
+    #voiceBtn.listening {
+      background: rgba(8, 218, 146, 0.16);
+      border-color: rgba(8, 218, 146, 0.7);
+      box-shadow: 0 0 12px rgba(8, 218, 146, 0.8);
+      transform: translateY(-1px);
+    }
+
+    .footnote-chat {
+      margin-top: 7px;
+      font-size: 11px;
       color: var(--text-dim);
     }
 
-    .demo-note {
-      margin-top: 8px;
-      font-size: 0.85rem;
-      color: var(--text-dim);
+    .footnote-chat span {
+      color: var(--accent-soft);
     }
 
-    .demo-note a {
-      color: var(--accent-strong);
-      text-decoration: none;
-    }
-
-    .demo-note a:hover {
-      text-decoration: underline;
-    }
-
-    @media (max-width: 720px) {
+    @media (max-width: 900px) {
       body {
-        padding: 18px 10px 28px;
+        padding: 18px;
       }
 
-      .chat-card {
-        margin-top: 16px;
-        padding: 16px 12px 14px;
+      .shell {
+        padding: 20px 18px 16px;
       }
 
-      .chat-inner {
-        padding: 14px 12px 12px;
+      .left-panel {
+        padding-right: 0;
+      }
+
+      h1 {
+        font-size: 23px;
+      }
+
+      .metrics {
+        margin-top: 14px;
+      }
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 14px;
+      }
+
+      .shell {
+        padding: 18px 14px 14px;
+      }
+
+      .shell-inner {
+        gap: 18px;
       }
 
       .chat-box {
-        min-height: 260px;
-        max-height: 420px;
+        max-height: 360px;
       }
 
-      .hero-title {
-        font-size: 1.5rem;
-      }
-
-      .hero-sub {
-        font-size: 0.95rem;
-      }
-
-      .starter-chip {
-        width: 100%;
-        justify-content: flex-start;
-      }
-
-      #sendBtn {
-        flex: 0 0 100%;
-        justify-content: center;
+      .bubble-user,
+      .bubble-ai {
+        font-size: 17px;
       }
 
       .input-row {
         flex-direction: column;
       }
 
-      .mic-btn {
-        right: 14px;
-      }
-
-      #userMsg {
-        padding-right: 44px;
+      .input-row button {
+        width: 100%;
+        text-align: center;
+        justify-content: center;
       }
     }
   </style>
 </head>
-<body>
-  <div class="app">
-    <header class="hero">
-      <div class="hero-logo">
-        <div class="hero-logo-mark">
-          <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <linearGradient id="gradHero" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stop-color="#f9e6a9"/>
-                <stop offset="35%" stop-color="#f1c45d"/>
-                <stop offset="70%" stop-color="#b37cff"/>
-                <stop offset="100%" stop-color="#2c0f63"/>
-              </linearGradient>
-            </defs>
-            <circle cx="20" cy="20" r="18" fill="url(#gradHero)" />
-            <path d="M14 10c3.5 0 6 3.2 6 7.5S17.5 25 14 25 8 21.8 8 17.5 10.5 10 14 10Z" fill="rgba(12,8,24,0.96)"/>
-            <path d="M26 13c2.4 0 4.2 1.9 4.2 4.5S28.4 22 26 22s-4.2-1.9-4.2-4.5S23.6 13 26 13Z" fill="rgba(12,8,24,0.96)"/>
-            <path d="M18 13h3.5M18 16h3.5M18 19h3.5M18 22h3.5" stroke="#f9e6a9" stroke-width="1.2" stroke-linecap="round" />
-          </svg>
-        </div>
-        <div class="hero-logo-text">ESTEBORG <span>EXECUTIVE</span></div>
-      </div>
-      <h1 class="hero-title">
-        ¿Tu comunicación está frenando tu crecimiento profesional?<br />
-        <span>Haz el Mini Diagnóstico Esteborg y descúbrelo en 2 minutos.</span>
-      </h1>
-      <p class="hero-sub">
-        Un ejercicio guiado por Esteborg, tu entrenador ejecutivo de
-        <strong>comunicación emocional</strong>, <strong>liderazgo</strong> y
-        <strong>claridad mental</strong>.
-      </p>
-    </header>
 
-    <main class="chat-card">
-      <div class="chat-inner">
+<body>
+  <div class="shell">
+    <div class="shell-inner">
+      <!-- Columna izquierda: contexto del demo -->
+      <div class="left-panel">
+        <div class="eyebrow">Demo ejecutivo Esteborg</div>
+        <h1>Prueba cómo Esteborg cambia tu vida para siempre.</h1>
+        <p class="subcopy">
+          En esta demo Esteborg analiza tu comunicación, tu liderazgo y tu claridad mental
+          como si fuera un coach ejecutivo real, pero en versión digital.
+          Tú pones el reto, él te devuelve un diagnóstico y acciones puntuales.
+        </p>
+
+        <div class="badge-row">
+          <div class="badge">
+            <span class="badge-dot"></span>
+            Sesión guiada en tiempo real
+          </div>
+          <div class="badge">
+            14 interacciones demo
+          </div>
+          <div class="badge">
+            Enfoque: comunicación + liderazgo
+          </div>
+        </div>
+
+        <div class="metrics">
+          <div class="metric-item">
+            <div class="metric-label">Modo</div>
+            <div class="metric-value">Demo estratégico</div>
+            <div class="metric-tag">Sin humo. Solo claridad.</div>
+          </div>
+          <div class="metric-item">
+            <div class="metric-label">Estilo</div>
+            <div class="metric-value">Ejecutivo, humano</div>
+            <div class="metric-tag">Tono directo y empático</div>
+          </div>
+          <div class="metric-item">
+            <div class="metric-label">Siguiente paso</div>
+            <div class="metric-value">Entrenadores de 7 días</div>
+            <div class="metric-tag">Acceso vía Members VIP</div>
+          </div>
+        </div>
+
+        <div class="footnote-left">
+          Al terminar la demo, podrás ir a <span>Esteborg Members VIP</span> para desbloquear
+          los programas profundos de comunicación, liderazgo y ventas consultivas.
+        </div>
+      </div>
+
+      <!-- Columna derecha: chat -->
+      <div class="chat-wrapper">
         <div class="chat-header">
           <div class="chat-header-left">
-            <div class="chat-title">Mini Diagnóstico · Comunicación con Esteborg</div>
-            <div class="chat-subtitle">
-              Responde como si hablaras con tu coach. Entre más claro seas, mejor el diagnóstico.
+            <div class="avatar">
+              <span>E</span>
+            </div>
+            <div class="chat-title-block">
+              <div class="chat-title">Esteborg · Demo diagnóstico</div>
+              <div class="chat-subtitle">Entrenador ejecutivo con IA aplicada</div>
             </div>
           </div>
           <div class="chat-header-right">
-            <span class="dot-live"></span>
-            <span>Demo guiada</span>
-          </div>
-        </div>
-
-        <div id="chatBox" class="chat-box">
-          <div class="msg-row">
-            <div class="bubble bubble-ai">
-              <div class="bubble-label">
-                <span class="bubble-label-dot"></span>
-                <span>Esteborg</span>
-              </div>
-              <div>
-                Antes de entrar a tu mini diagnóstico, dime:
-                <strong>¿en qué idioma quieres que conversemos?</strong>
-                Escribe <strong>"español"</strong> o <strong>"inglés"</strong>.
-              </div>
-              <div class="bubble-meta">Paso 1 de 3</div>
+            <button
+              id="ttsToggleBtn"
+              class="tts-toggle on"
+              type="button"
+              title="Activar/desactivar voz de Esteborg"
+            >
+              🔊
+            </button>
+            <div class="pill-demo">
+              <div class="pill-dot"></div>
+              <span id="demoStatusLabel">Demo activo</span>
             </div>
           </div>
         </div>
 
-        <div class="starter-row" id="startersRow">
-          <button class="starter-chip" data-starter="Quiero comunicarme mejor con mi equipo.">
-            <span class="starter-dot"></span>
-            <span>Quiero comunicarme mejor con mi equipo.</span>
-          </button>
-          <button class="starter-chip" data-starter="Quiero más claridad mental para tomar decisiones importantes.">
-            <span class="starter-dot"></span>
-            <span>Quiero más claridad mental para decidir.</span>
-          </button>
-          <button class="starter-chip" data-starter="Quiero comunicarme mejor con clientes o prospectos.">
-            <span class="starter-dot"></span>
-            <span>Quiero comunicarme mejor con clientes.</span>
-          </button>
+        <!-- Iniciadores de conversación ARRIBA del chat -->
+        <div class="starters">
+          <button class="starter-btn">Quiero comunicarme mejor con mi equipo sin tanta fricción.</button>
+          <button class="starter-btn">Siento que no proyecto la autoridad que debería.</button>
+          <button class="starter-btn">Me trabo cuando tengo que decir cosas difíciles.</button>
+          <button class="starter-btn">Quiero más claridad mental para tomar decisiones importantes.</button>
+        </div>
+
+        <div id="chatBox" class="chat-box">
+          <!-- Pregunta 1: idioma -->
+          <div class="bubble-ai">
+            Antes de entrar a tu demo, dime: ¿en qué idioma quieres interactuar? Escribe "español" o "inglés".
+          </div>
         </div>
 
         <div class="input-row">
-          <div class="input-wrapper">
-            <input
-              id="userMsg"
-              type="text"
-              placeholder="Escribe aquí..."
-              autocomplete="off"
-            />
-            <button class="mic-btn" id="micBtn" type="button" title="Hablar con tu voz">
-              <svg viewBox="0 0 24 24">
-                <path
-                  d="M12 4a2 2 0 0 0-2 2v4a2 2 0 1 0 4 0V6a2 2 0 0 0-2-2Zm-4 6a4 4 0 1 0 8 0h-1.5a2.5 2.5 0 1 1-5 0H8Z"
-                  fill="currentColor"
-                />
-                <path
-                  d="M11 15.95V19h2v-3.05a6.002 6.002 0 0 0 5-5.9h-2a4 4 0 1 1-8 0H6a6.002 6.002 0 0 0 5 5.9Z"
-                  fill="currentColor"
-                />
-              </svg>
-            </button>
-          </div>
-          <button id="sendBtn" type="button">
-            <span>Enviar a Esteborg</span>
+          <input
+            id="userMsg"
+            type="text"
+            autocomplete="off"
+            placeholder="Escribe: español o inglés…"
+          />
+          <button id="voiceBtn" type="button" title="Hablar con Esteborg">
+            🎤
           </button>
+          <button id="sendBtn" type="button">Enviar a Esteborg</button>
         </div>
 
-        <div class="status-row">
-          <div id="demoStatus">
-            <span class="status-dot"></span>
-            <span>Demo activa · primeras interacciones</span>
-          </div>
-          <button id="ttsToggle" type="button">
-            🔊 Voz Esteborg
-          </button>
+        <div class="footnote-chat">
+          Esta demo está limitada. Cuando llegue al final, Esteborg te invitará a continuar en
+          <span>Members VIP</span> con el entrenamiento completo.
         </div>
-
-        <p class="demo-note">
-          Esta demo es gratuita y limitada. Cuando llegue al final, Esteborg te invitará a continuar en
-          <a href="https://membersvip.esteborg.live" target="_blank" rel="noopener noreferrer">
-            Members VIP
-          </a>
-          con el entrenamiento completo.
-        </p>
       </div>
-    </main>
+    </div>
   </div>
 
   <script>
-    const doc = document;
-
-    const chatBox = doc.getElementById("chatBox");
-    const userMsgInput = doc.getElementById("userMsg");
-    const sendBtn = doc.getElementById("sendBtn");
-    const demoStatusEl = doc.getElementById("demoStatus");
-    const ttsToggleBtn = doc.getElementById("ttsToggle");
-    const micBtn = doc.getElementById("micBtn");
-    const startersRow = doc.getElementById("startersRow");
-
-    const API_URL = "https://esteborg88full-backend-modular.onrender.com/api/demo/welcome";
+    // === CONFIGURACIÓN DE API ===
+    const API_BASE = "https://esteborg88full-backend-modular.onrender.com";
+    const API_URL = `${API_BASE}/api/demo/welcome`;
+    const TTS_URL = `${API_BASE}/api/voice`;
 
     let history = [];
     let isSending = false;
     let demoEnded = false;
     let userName = null;
-    let introStep = 1; // 1 idioma, 2 nombre, 3 conversación
-    let currentLang = "es";
+
+    // 1 = idioma, 2 = voz (solo conceptual), 3 = nombre, 4 = conversación normal
+    let introStep = 1;
+
+    // Idioma de experiencia
+    let currentLang = "es"; // "es" o "en"
+
+    // Estado TTS (ElevenLabs)
     let ttsEnabled = true;
     let currentAudio = null;
 
+    const FIXED_PLAN_ANSWER = `✨ Qué buena pregunta.
+Puedes acceder a todos los programas y entrenamientos de Esteban desde esta página oficial:
+👉 https://membersvip.esteborg.live/
+
+Y además, hoy tienes un cupón exclusivo del 50% de descuento para cualquier plan:
+🎁 EsteborgVIPOffer
+
+Te recomiendo elegir según tu objetivo actual:
+
+🧠 Entrenador Inteligente de Comunicación Emocional (7 días) → para desarrollar calma, empatía y expresión consciente.
+
+💬 Entrenador Inteligente de Ventas Conscientes (7 días) → si buscas conectar mejor con tus clientes y comunicar valor.
+
+💎 O el bundle completo, con ambos entrenamientos y una sesión personalizada con Esteban.
+
+¿Quieres que te ayude a decidir cuál de estos tres caminos se adapta mejor a tu situación actual?`;
+
+    // ====== HELPERS ======
     function formatTextWithLinks(text) {
       if (!text) return "";
-      const urlRegex =
-        /(https?:\/\/[^\s]+)|(www\.[^\s]+)|(membersvip\.esteborg\.live[^\s]*)/gi;
-
-      return text.replace(urlRegex, (match) => {
-        let url = match;
-        if (!/^https?:\/\//i.test(url)) {
-          if (url.startsWith("www.")) {
-            url = "https://" + url;
-          } else if (url.startsWith("membersvip.esteborg.live")) {
-            url = "https://" + url;
-          }
-        }
-        return `<a href="${url}" target="_blank" rel="noopener noreferrer">${match}</a>`;
-      });
-    }
-
-    function appendMessage(role, text, meta) {
-      const row = doc.createElement("div");
-      row.className = "msg-row " + (role === "user" ? "user" : "ai");
-
-      const bubble = doc.createElement("div");
-      bubble.className = "bubble " + (role === "user" ? "bubble-user" : "bubble-ai");
-
-      const label = doc.createElement("div");
-      label.className = "bubble-label";
-      const dot = doc.createElement("span");
-      dot.className = "bubble-label-dot";
-      const who = doc.createElement("span");
-      who.textContent = role === "user" ? (userName || "Tú") : "Esteborg";
-
-      label.appendChild(dot);
-      label.appendChild(who);
-      bubble.appendChild(label);
-
-      const content = doc.createElement("div");
-      if (role === "assistant") {
-        content.innerHTML = formatTextWithLinks(text);
-      } else {
-        content.textContent = text;
-      }
-      bubble.appendChild(content);
-
-      if (meta) {
-        const metaDiv = doc.createElement("div");
-        metaDiv.className = "bubble-meta";
-        metaDiv.textContent = meta;
-        bubble.appendChild(metaDiv);
-      }
-
-      row.appendChild(bubble);
-      chatBox.appendChild(row);
-      chatBox.scrollTop = chatBox.scrollHeight;
-
-      if (role === "assistant") {
-        speakFromApi(text);
-      }
-    }
-
-    function updateDemoStatus(text, ended) {
-      if (!demoStatusEl) return;
-      demoStatusEl.innerHTML = "";
-
-      const dot = doc.createElement("span");
-      dot.className = "status-dot";
-      if (ended) dot.classList.add("ended");
-
-      const label = doc.createElement("span");
-      label.textContent = text;
-
-      demoStatusEl.appendChild(dot);
-      demoStatusEl.appendChild(label);
-    }
-
-    function setDemoStatus(status, remaining) {
-      if (status === "ended") {
-        updateDemoStatus("Demo finalizada · entra a Members VIP para seguir", true);
-        demoEnded = true;
-        sendBtn.disabled = true;
-        userMsgInput.disabled = true;
-        return;
-      }
-
-      if (typeof remaining === "number") {
-        if (remaining <= 0) {
-          updateDemoStatus("Demo finalizada · entra a Members VIP para seguir", true);
-          demoEnded = true;
-          sendBtn.disabled = true;
-          userMsgInput.disabled = true;
-        } else if (remaining <= 3) {
-          updateDemoStatus("Demo activa · últimas " + remaining + " interacciones", false);
-        } else {
-          updateDemoStatus("Demo activa · " + remaining + " interacciones restantes", false);
-        }
-      } else {
-        updateDemoStatus("Demo activa · primeras interacciones", false);
-      }
+      const urlRegex = /(https?:\/\/[^\s]+)/g;
+      return text.replace(
+        urlRegex,
+        '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>'
+      );
     }
 
     function detectLangChoice(message) {
-      const text = (message || "").toLowerCase();
-      if (text.includes("english") || text.includes("inglés") || text.includes("ingles")) return "en";
-      if (text.includes("spanish") || text.includes("español") || text.includes("espanol")) return "es";
-      return currentLang || "es";
+      const t = (message || "").toLowerCase();
+      if (t.includes("english") || t.includes("inglés") || t.includes("ingles") || t === "en") {
+        return "en";
+      }
+      if (t.includes("español") || t.includes("espanol") || t === "es") {
+        return "es";
+      }
+      return "es";
     }
 
-    function formatLangForBackend(lang) {
-      return (lang || "").toLowerCase().startsWith("en") ? "en" : "es";
+    function detectVoiceGenderChoice(message) {
+      const t = (message || "").toLowerCase();
+      if (
+        t.includes("masculina") ||
+        t.includes("hombre") ||
+        t.includes("masculino") ||
+        t.includes("male") ||
+        t.includes("man")
+      ) {
+        return "m";
+      }
+      return "f";
     }
 
-    function setLoading(isLoading) {
-      isSending = isLoading;
-      sendBtn.disabled = isLoading || demoEnded;
-      userMsgInput.disabled = demoEnded;
-      sendBtn.textContent = isLoading ? "Pensando..." : "Enviar a Esteborg";
+    function isPlanQuestion(text) {
+      const t = (text || "").toLowerCase();
+      return (
+        t.includes("dónde contratar") ||
+        t.includes("donde contratar") ||
+        t.includes("dónde contrato") ||
+        t.includes("donde contrato") ||
+        t.includes("contratar un plan") ||
+        t.includes("contratar el plan") ||
+        t.includes("contratar esteborg") ||
+        t.includes("dónde compro esteborg") ||
+        t.includes("donde compro esteborg") ||
+        t.includes("dónde adquirir esteborg") ||
+        t.includes("donde adquirir esteborg") ||
+        t.includes("planes de esteborg") ||
+        t.includes("plan de esteborg") ||
+        t.includes("donde contrato un plan de esteborg") ||
+        t.includes("dónde contrato un plan de esteborg")
+      );
     }
 
-    async function speakFromApi(text) {
-      if (!ttsEnabled || !text) return;
-
+    // ====== TTS con ElevenLabs vía backend ======
+    async function speak(text) {
       try {
-        const trimmed = text.length > 400 ? text.slice(0, 400) : text;
+        if (!ttsEnabled) return;
+        if (!text || !text.trim()) return;
 
-        const res = await fetch("https://esteborg88full-backend-modular.onrender.com/api/tts", {
+        // cortar audio previo
+        if (currentAudio) {
+          currentAudio.pause();
+          currentAudio = null;
+        }
+
+        const resp = await fetch(TTS_URL, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ text: trimmed, lang: currentLang })
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ text }),
         });
 
-        if (!res.ok) {
-          console.error("TTS API error", await res.text());
+        if (!resp.ok) {
+          console.error("Error TTS:", await resp.text());
           return;
         }
 
-        const blob = await res.blob();
+        const blob = await resp.blob();
         const url = URL.createObjectURL(blob);
-
-        if (currentAudio) {
-          try {
-            currentAudio.pause();
-            currentAudio.currentTime = 0;
-          } catch {}
-        }
-
-        currentAudio = new Audio(url);
-        currentAudio.play();
+        const audio = new Audio(url);
+        currentAudio = audio;
+        audio.play().catch((err) => {
+          console.error("Error reproduciendo audio:", err);
+        });
       } catch (e) {
-        console.error("Error al reproducir TTS externo:", e);
+        console.error("Error en speak():", e);
       }
     }
 
+    // ====== UI HELPERS ======
+    function appendMessage(role, text) {
+      const bubble = document.createElement("div");
+      bubble.className = role === "user" ? "bubble-user" : "bubble-ai";
+
+      const box = document.getElementById("chatBox");
+
+      if (role === "assistant") {
+        bubble.innerHTML = formatTextWithLinks(text);
+      } else {
+        bubble.textContent = text;
+      }
+
+      box.appendChild(bubble);
+      box.scrollTop = box.scrollHeight;
+
+      if (role === "assistant") {
+        speak(text);
+      }
+    }
+
+    function setLoading(state) {
+      const btn = document.getElementById("sendBtn");
+      const input = document.getElementById("userMsg");
+      isSending = state;
+      btn.disabled = state || demoEnded;
+      input.disabled = demoEnded;
+      if (state) {
+        btn.textContent = "Pensando…";
+      } else if (!demoEnded) {
+        btn.textContent = "Enviar a Esteborg";
+      }
+    }
+
+    function setDemoStatus(status, remaining) {
+      const label = document.getElementById("demoStatusLabel");
+
+      if (status === "ended") {
+        demoEnded = true;
+        label.textContent = "Demo finalizada";
+        return;
+      }
+
+      if (remaining === null || remaining === undefined) {
+        label.textContent = "Demo activo";
+        return;
+      }
+
+      label.textContent = `Demo activa · ${remaining} interacciones restantes`;
+    }
+
+    // ====== LÓGICA PRINCIPAL ======
     async function sendMessage() {
       if (isSending || demoEnded) return;
-      const message = (userMsgInput.value || "").trim();
+
+      const input = document.getElementById("userMsg");
+      const message = (input.value || "").trim();
       if (!message) return;
 
       appendMessage("user", message);
-      userMsgInput.value = "";
 
+      // === ONBOARDING ===
       if (introStep === 1) {
+        // idioma
         currentLang = detectLangChoice(message);
-        const reply =
-          currentLang === "en"
-            ? "Perfect. We'll talk in English. What's your first name?"
-            : "Perfecto. Hablaremos en español. ¿Cómo te llamas?";
+
+        let q2;
+        if (currentLang === "en") {
+          q2 =
+            "Great. We'll interact in English. Now tell me: do you prefer Esteborg's voice to sound more masculine or more feminine?";
+          input.placeholder = "Type: masculine or feminine…";
+        } else {
+          q2 =
+            "Perfecto. Interactuaremos en español. Ahora dime: ¿quieres que la voz de Esteborg suene más masculina o más femenina?";
+          input.placeholder = "Escribe: masculina o femenina…";
+        }
+
+        appendMessage("assistant", q2);
+
+        history.push({ role: "user", content: message });
+        history.push({ role: "assistant", content: q2 });
+
         introStep = 2;
-        appendMessage("assistant", reply, "Paso 2 de 3");
+        input.value = "";
+        input.focus();
         return;
       }
 
       if (introStep === 2) {
-        userName = message
-          .split(" ")
-          .map((p) => p.trim())
-          .filter(Boolean)
-          .slice(0, 2)
-          .join(" ");
+        // voz (conceptual, pero la voz real la controla ElevenLabs en el backend)
+        detectVoiceGenderChoice(message); // por si luego decidimos usarlo
 
-        const reply =
-          currentLang === "en"
-            ? `Thanks, ${userName}. Now tell me in one sentence what you want to improve first: your communication, your leadership or your mental clarity.`
-            : `Gracias, ${userName}. Ahora dime en una sola frase qué quieres mejorar primero: tu comunicación, tu liderazgo o tu claridad mental.`;
+        let q3;
+        if (currentLang === "en") {
+          q3 = "Perfect. What's your name?";
+          input.placeholder = "Type your name…";
+        } else {
+          q3 = "Perfecto. Ahora dime, ¿cómo te llamas?";
+          input.placeholder = "Escribe tu nombre…";
+        }
+
+        appendMessage("assistant", q3);
+
+        history.push({ role: "user", content: message });
+        history.push({ role: "assistant", content: q3 });
+
         introStep = 3;
-        appendMessage("assistant", reply, "Paso 3 de 3");
+        input.value = "";
+        input.focus();
         return;
       }
 
+      if (introStep === 3) {
+        // nombre
+        userName = message;
+
+        let followUp;
+        if (currentLang === "en") {
+          followUp =
+            `Thanks, ${userName}. ` +
+            `Now tell me in one sentence what you want to improve first: ` +
+            `your communication, your leadership or your mental clarity.`;
+          input.placeholder =
+            "E.g. I want to communicate better with my team…";
+        } else {
+          followUp =
+            `Gracias, ${userName}. ` +
+            `Ahora sí: cuéntame en una frase qué quieres mejorar primero: ` +
+            `tu comunicación, tu liderazgo o tu claridad mental.`;
+          input.placeholder =
+            "Ej. Quiero comunicarme mejor con mi equipo…";
+        }
+
+        appendMessage("assistant", followUp);
+
+        history.push({ role: "user", content: message });
+        history.push({ role: "assistant", content: followUp });
+
+        introStep = 4;
+        input.value = "";
+        input.focus();
+        return;
+      }
+
+      // === FIN ONBOARDING / MODO NORMAL ===
+
+      // Pregunta sobre contratar plan → respuesta fija
+      if (isPlanQuestion(message)) {
+        appendMessage("assistant", FIXED_PLAN_ANSWER);
+
+        history.push({ role: "user", content: message });
+        history.push({ role: "assistant", content: FIXED_PLAN_ANSWER });
+
+        input.value = "";
+        input.focus();
+        return;
+      }
+
+      // Mensajes normales → backend
       setLoading(true);
 
-      try {
-        const payload = {
-          message,
-          userName: userName || "",
-          history,
-          lang: formatLangForBackend(currentLang),
-        };
+      let finalMessage;
+      if (currentLang === "en") {
+        finalMessage =
+          "Please answer in English, using a fresh, modern, executive tone. " +
+          message;
+      } else {
+        finalMessage =
+          "Responde en español latino neutro, con un tono fresco, moderno y ejecutivo. " +
+          message;
+      }
 
+      const payload = {
+        message: finalMessage,
+        userName: userName || "Invitado",
+        history: history,
+      };
+
+      try {
         const res = await fetch(API_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
         });
-
-        if (!res.ok) {
-          console.error("Error en backend demo:", await res.text());
-          const fallbackMsg =
-            currentLang === "en"
-              ? "There was a connection issue. Try again in a few seconds."
-              : "Hubo un problema de conexión. Vuelve a intentar en unos segundos.";
-          appendMessage("assistant", fallbackMsg);
-          return;
-        }
 
         const data = await res.json();
 
@@ -881,133 +1013,85 @@
               typeof data.remainingInteractions === "number"
                 ? data.remainingInteractions
                 : null;
-            setDemoStatus(data.demoStatus, remaining);
+
+            if (data.demoStatus === "ended") {
+              setDemoStatus("ended", 0);
+            } else {
+              if (remaining !== null && remaining <= 3) {
+                setDemoStatus("active", remaining);
+              } else {
+                setDemoStatus("active", null);
+              }
+            }
           }
         } else {
-          const fallbackMsg =
-            currentLang === "en"
-              ? "I couldn't process the response correctly. Try asking in a different way."
-              : "No pude procesar bien la respuesta. Intenta preguntarlo de otra forma.";
-          appendMessage("assistant", fallbackMsg);
+          appendMessage(
+            "assistant",
+            "No recibí respuesta del servidor. Intenta de nuevo en un momento."
+          );
         }
       } catch (err) {
-        console.error("Error al llamar al backend:", err);
-        const fallbackMsg =
-          currentLang === "en"
-            ? "There was a connection issue. Try again in a few seconds."
-            : "Hubo un problema de conexión. Vuelve a intentar en unos segundos.";
-        appendMessage("assistant", fallbackMsg);
+        console.error(err);
+        appendMessage(
+          "assistant",
+          "Hubo un problema al conectar con el servidor. Intenta de nuevo en unos segundos."
+        );
       } finally {
         setLoading(false);
+        input.value = "";
+        input.focus();
       }
     }
 
-    sendBtn.addEventListener("click", () => sendMessage());
-    userMsgInput.addEventListener("keydown", (e) => {
-      if (e.key === "Enter" && !e.shiftKey) {
-        e.preventDefault();
-        sendMessage();
-      }
-    });
+    // ====== EVENTOS UI ======
+    function setupUI() {
+      const sendBtn = document.getElementById("sendBtn");
+      const input = document.getElementById("userMsg");
+      const ttsBtn = document.getElementById("ttsToggleBtn");
+      const voiceBtn = document.getElementById("voiceBtn");
+      const starters = document.querySelectorAll(".starter-btn");
 
-    if (startersRow) {
-      startersRow.querySelectorAll(".starter-chip").forEach((chip) => {
-        chip.addEventListener("click", () => {
-          if (demoEnded || isSending) return;
-          const val = chip.getAttribute("data-starter") || chip.textContent || "";
-          if (!val.trim()) return;
-
-          if (introStep < 3) {
-            appendMessage(
-              "assistant",
-              "Primero terminemos idioma y nombre, luego usamos tus retos como ejemplo."
-            );
-            return;
-          }
-
-          userMsgInput.value = val;
+      sendBtn.addEventListener("click", sendMessage);
+      input.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && !e.shiftKey) {
+          e.preventDefault();
           sendMessage();
+        }
+      });
+
+      ttsBtn.addEventListener("click", () => {
+        ttsEnabled = !ttsEnabled;
+        if (!ttsEnabled && currentAudio) {
+          currentAudio.pause();
+          currentAudio = null;
+        }
+        ttsBtn.textContent = ttsEnabled ? "🔊" : "🔈";
+        if (ttsEnabled) {
+          ttsBtn.classList.add("on");
+        } else {
+          ttsBtn.classList.remove("on");
+        }
+      });
+
+      // Mic: por ahora sin STT, solo placeholder
+      voiceBtn.addEventListener("click", () => {
+        alert("Pronto podrás hablarle a Esteborg con tu voz. Por ahora escribe tu mensaje 😉");
+      });
+
+      starters.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const text = btn.textContent || "";
+          const input = document.getElementById("userMsg");
+          input.value = text;
+          input.focus();
         });
       });
     }
 
-    ttsToggleBtn.addEventListener("click", () => {
-      ttsEnabled = !ttsEnabled;
-      if (ttsEnabled) {
-        ttsToggleBtn.classList.remove("off");
-        ttsToggleBtn.textContent = "🔊 Voz Esteborg";
-      } else {
-        ttsToggleBtn.classList.add("off");
-        ttsToggleBtn.textContent = "🔇 Voz desactivada";
-        if (currentAudio) {
-          try {
-            currentAudio.pause();
-            currentAudio.currentTime = 0;
-          } catch {}
-        }
-      }
+    // Init
+    document.addEventListener("DOMContentLoaded", () => {
+      setupUI();
     });
-
-    // Mic: al terminar de hablar, manda automáticamente a Esteborg
-    function setupVoiceInput() {
-      if (!("webkitSpeechRecognition" in window) && !("SpeechRecognition" in window)) {
-        if (micBtn) micBtn.style.display = "none";
-        return;
-      }
-
-      const SpeechRecognition =
-        window.SpeechRecognition || window.webkitSpeechRecognition;
-      const recognition = new SpeechRecognition();
-      recognition.lang = "es-MX";
-      recognition.continuous = false;
-      recognition.interimResults = false;
-
-      let isRecording = false;
-
-      function setRecording(active) {
-        isRecording = active;
-        if (!micBtn) return;
-        if (active) micBtn.classList.add("recording");
-        else micBtn.classList.remove("recording");
-      }
-
-      if (micBtn) {
-        micBtn.addEventListener("click", () => {
-          if (isRecording) {
-            recognition.stop();
-            setRecording(false);
-          } else {
-            try {
-              recognition.lang = currentLang === "en" ? "en-US" : "es-MX";
-              recognition.start();
-              setRecording(true);
-            } catch (e) {
-              console.warn("Error al iniciar reconocimiento de voz:", e);
-            }
-          }
-        });
-      }
-
-      recognition.onresult = (event) => {
-        const transcript = event.results[0][0].transcript.trim();
-        if (!transcript) return;
-        userMsgInput.value = transcript;
-        setRecording(false);
-        recognition.stop();
-        // Enviar automáticamente lo que se dictó
-        sendMessage();
-      };
-
-      recognition.onerror = () => {
-        setRecording(false);
-      };
-
-      recognition.onend = () => {
-        setRecording(false);
-      };
-    }
-
-    setupVoiceInput();
   </script>
 </body>
 </html>
