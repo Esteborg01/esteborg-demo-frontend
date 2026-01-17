@@ -3,33 +3,22 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Demo Esteborg Ejecutivo</title>
+  <title>Mini Diagnóstico Esteborg</title>
 
   <style>
     :root {
       --bg-main: #050509;
-      --bg-gradient-start: #151521;
-      --bg-gradient-end: #050509;
-      --card-bg: #0c0c14;
-      --card-inner: #101018;
-      --accent: #d8b15a;
-      --accent-soft: #b89446;
-      --accent-strong: #f2cf70;
+      --accent: #f1ca63;
+      --accent-strong: #f6e29e;
       --accent-alt: #8fd8ff;
-      --danger: #ff6b6b;
-      --success: #46d88a;
       --text-main: #f5f5ff;
       --text-soft: #c3c3d8;
       --text-dim: #7e7e9c;
-      --border-subtle: #232334;
-      --shadow-soft: 0 24px 70px rgba(0, 0, 0, 0.65);
-      --radius-lg: 24px;
-      --radius-xl: 32px;
+      --border-subtle: #25253a;
+      --card-bg: #0b0b16;
+      --card-inner: #10101d;
+      --radius-lg: 20px;
       --radius-pill: 999px;
-      --glass: rgba(15, 15, 30, 0.82);
-      --glass-strong: rgba(15, 15, 30, 0.95);
-      --chip-bg: rgba(216, 177, 90, 0.12);
-      --chip-border: rgba(216, 177, 90, 0.3);
     }
 
     * {
@@ -41,461 +30,110 @@
       min-height: 100vh;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
         "Inter", sans-serif;
-      background: radial-gradient(circle at top, #262042 0, #050509 55%, #020208 100%);
+      background: radial-gradient(circle at top, #28224b 0, #050509 55%, #020208 100%);
       color: var(--text-main);
       display: flex;
       justify-content: center;
       align-items: flex-start;
-      padding: 32px 12px 48px;
+      padding: 24px 12px 40px;
     }
 
-    .bg-overlay {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      opacity: 0.65;
-      z-index: -1;
-      background:
-        radial-gradient(circle at 12% 0%, rgba(155, 120, 255, 0.18) 0, transparent 55%),
-        radial-gradient(circle at 90% 10%, rgba(248, 203, 112, 0.18) 0, transparent 55%),
-        radial-gradient(circle at 10% 100%, rgba(95, 216, 149, 0.14) 0, transparent 50%);
-    }
-
-    .app-shell {
+    .app {
       width: 100%;
-      max-width: 1120px;
-      display: grid;
-      grid-template-columns: minmax(0, 3.2fr) minmax(0, 2.2fr);
-      gap: 28px;
-      align-items: stretch;
+      max-width: 960px;
     }
 
-    @media (max-width: 980px) {
-      .app-shell {
-        grid-template-columns: minmax(0, 1fr);
-      }
+    .hero {
+      text-align: center;
+      margin-bottom: 20px;
     }
 
-    .card-main {
-      position: relative;
-      background: radial-gradient(circle at top left, #262042 0, #050509 52%);
-      border-radius: var(--radius-xl);
-      padding: 20px 20px 18px;
-      box-shadow: var(--shadow-soft);
-      border: 1px solid rgba(143, 142, 182, 0.26);
-      overflow: hidden;
-    }
-
-    @media (min-width: 900px) {
-      .card-main {
-        padding: 22px 22px 18px;
-      }
-    }
-
-    .card-main::before {
-      content: "";
-      position: absolute;
-      inset: -120px;
-      background:
-        radial-gradient(circle at top, rgba(216, 177, 90, 0.18) 0, transparent 55%),
-        radial-gradient(circle at 80% 120%, rgba(109, 159, 255, 0.18) 0, transparent 55%);
-      opacity: 0.75;
-      z-index: -1;
-    }
-
-    .card-main-inner {
-      position: relative;
-      border-radius: 20px;
-      background: linear-gradient(
-        145deg,
-        rgba(9, 9, 18, 0.95),
-        rgba(12, 12, 22, 0.98),
-        rgba(6, 7, 18, 0.98)
-      );
-      border: 1px solid rgba(138, 137, 184, 0.4);
-      box-shadow: 0 22px 70px rgba(0, 0, 0, 0.75);
-      padding: 18px;
-      overflow: hidden;
-    }
-
-    @media (min-width: 900px) {
-      .card-main-inner {
-        padding: 20px 20px 18px;
-      }
-    }
-
-    .card-main-inner::before {
-      content: "";
-      position: absolute;
-      inset: -2px;
-      border-radius: inherit;
-      border: 1px solid transparent;
-      background: linear-gradient(145deg, rgba(249, 221, 140, 0.25), rgba(140, 127, 246, 0.2))
-        border-box;
-      -webkit-mask:
-        linear-gradient(#000 0 0) padding-box,
-        linear-gradient(#000 0 0);
-      -webkit-mask-composite: xor;
-      mask-composite: exclude;
-      opacity: 0.8;
-      pointer-events: none;
-    }
-
-    .card-main-inner::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background:
-        radial-gradient(circle at top left, rgba(216, 177, 90, 0.12) 0, transparent 50%),
-        radial-gradient(circle at bottom right, rgba(143, 216, 210, 0.15) 0, transparent 55%);
-      opacity: 0.9;
-      z-index: -1;
-    }
-
-    .card-sidebar {
-      position: relative;
-      border-radius: var(--radius-xl);
-      background: radial-gradient(circle at 0 0, #262043 0, #050509 55%);
-      padding: 18px 16px 15px;
-      border: 1px solid rgba(143, 142, 182, 0.35);
-      box-shadow: 0 18px 55px rgba(0, 0, 0, 0.7);
-      overflow: hidden;
-    }
-
-    @media (min-width: 900px) {
-      .card-sidebar {
-        padding: 20px 18px 16px;
-      }
-    }
-
-    .card-sidebar::before {
-      content: "";
-      position: absolute;
-      inset: -120px;
-      background:
-        radial-gradient(circle at 12% 0%, rgba(216, 177, 90, 0.1) 0, transparent 50%),
-        radial-gradient(circle at 80% 100%, rgba(124, 208, 188, 0.14) 0, transparent 55%);
-      opacity: 0.8;
-      z-index: -1;
-    }
-
-    .sidebar-inner {
-      position: relative;
-      border-radius: 20px;
-      background: linear-gradient(145deg, rgba(8, 10, 25, 0.94), rgba(5, 6, 18, 0.98));
-      border: 1px solid rgba(141, 140, 194, 0.5);
-      padding: 16px;
-      box-shadow: 0 18px 60px rgba(0, 0, 0, 0.8);
-    }
-
-    @media (min-width: 900px) {
-      .sidebar-inner {
-        padding: 18px 16px 16px;
-      }
-    }
-
-    .sidebar-inner::before {
-      content: "";
-      position: absolute;
-      inset: -2px;
-      border-radius: inherit;
-      border: 1px solid transparent;
-      background: linear-gradient(145deg, rgba(249, 221, 140, 0.25), rgba(140, 127, 246, 0.22))
-        border-box;
-      -webkit-mask:
-        linear-gradient(#000 0 0) padding-box,
-        linear-gradient(#000 0 0);
-      -webkit-mask-composite: xor;
-      mask-composite: exclude;
-      opacity: 0.8;
-      pointer-events: none;
-    }
-
-    .sidebar-inner::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background:
-        radial-gradient(circle at top left, rgba(216, 177, 90, 0.08) 0, transparent 55%),
-        radial-gradient(circle at bottom right, rgba(143, 216, 210, 0.12) 0, transparent 60%);
-      opacity: 0.8;
-      z-index: -1;
-    }
-
-    .logo-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 14px;
-    }
-
-    .logo-group {
-      display: flex;
+    .hero-logo {
+      display: inline-flex;
       align-items: center;
       gap: 10px;
+      margin-bottom: 8px;
     }
 
-    .logo-mark {
+    .hero-logo-mark {
       width: 40px;
       height: 40px;
-      border-radius: 18px;
-      background: radial-gradient(circle at 30% 10%, #f8e089 0, #f1c967 18%, #8c46ff 42%, #32127b 82%);
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 0, #f8e089 0, #f1c967 18%, #8c46ff 52%, #32127b 90%);
       display: flex;
       align-items: center;
       justify-content: center;
       box-shadow:
-        0 0 0 1px rgba(255, 255, 255, 0.12),
-        0 12px 30px rgba(0, 0, 0, 0.7);
-      position: relative;
-      overflow: hidden;
+        0 0 0 1px rgba(0, 0, 0, 0.8),
+        0 10px 30px rgba(0, 0, 0, 0.75);
     }
 
-    .logo-mark::before {
-      content: "";
-      position: absolute;
-      inset: 6px;
-      border-radius: 14px;
-      background: radial-gradient(circle at 18% 0, #f8eeca 0, #f1c45d 24%, #ba7dff 58%, #361788 90%);
-      opacity: 0.92;
-    }
-
-    .logo-mark::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background:
-        radial-gradient(circle at 0 0, rgba(255, 255, 255, 0.36) 0, transparent 48%),
-        radial-gradient(circle at 120% 120%, rgba(0, 0, 0, 0.7) 0, transparent 55%);
-      mix-blend-mode: screen;
-      opacity: 0.75;
-    }
-
-    .logo-mark-inner {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .logo-mark-inner svg {
-      width: 26px;
-      height: 26px;
-      filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.65));
-    }
-
-    .logo-text-block {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-
-    .logo-title {
-      font-size: 1.08rem;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      font-weight: 650;
-      color: var(--text-main);
-      display: flex;
-      align-items: baseline;
-      gap: 6px;
-    }
-
-    .logo-title span {
-      display: inline-block;
-    }
-
-    .logo-title span.accent {
-      color: var(--accent-strong);
-    }
-
-    .logo-subtitle {
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      letter-spacing: 0.16em;
-      color: var(--text-dim);
-    }
-
-    .logo-tag {
-      border-radius: var(--radius-pill);
-      padding: 5px 10px;
-      font-size: 0.7rem;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      border: 1px solid rgba(191, 190, 232, 0.58);
-      color: var(--text-soft);
-      background: radial-gradient(circle at 0 0, rgba(201, 172, 95, 0.25), transparent 70%);
-      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.6);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      white-space: nowrap;
-    }
-
-    .logo-tag-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: var(--success);
-      box-shadow: 0 0 0 4px rgba(70, 216, 138, 0.28);
-    }
-
-    .headline {
-      margin-bottom: 10px;
-    }
-
-    .headline-kicker {
-      font-size: 0.8rem;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: var(--accent-soft);
-      margin-bottom: 6px;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .headline-kicker::before {
-      content: "";
-      width: 26px;
-      height: 1px;
-      background: linear-gradient(90deg, rgba(216, 177, 90, 0), rgba(216, 177, 90, 0.9));
-    }
-
-    .headline-title {
-      font-size: clamp(1.7rem, 2.2vw, 2rem);
-      line-height: 1.25;
-      margin: 0 0 6px;
-      font-weight: 680;
-      letter-spacing: 0.015em;
-    }
-
-    .headline-highlight {
-      color: var(--accent-strong);
-    }
-
-    .headline-subtitle {
-      font-size: 0.9rem;
-      color: var(--text-soft);
-      max-width: 460px;
-    }
-
-    .headline-subtitle strong {
-      color: var(--accent-soft);
-      font-weight: 550;
-    }
-
-    .pill-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin: 14px 0 10px;
-    }
-
-    .pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      border-radius: 999px;
-      padding: 6px 12px 6px 7px;
-      border: 1px solid rgba(191, 190, 232, 0.38);
-      background: radial-gradient(circle at 0 0, rgba(216, 177, 90, 0.18), transparent 65%);
-      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.5);
-      font-size: 0.78rem;
-      color: var(--text-soft);
-    }
-
-    .pill-icon {
+    .hero-logo-mark svg {
       width: 22px;
       height: 22px;
-      border-radius: 999px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      background: radial-gradient(circle at 30% 0, rgba(248, 222, 145, 0.9) 0, #d8b15a 40%, #8c46ff 100%);
-      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.5);
-      color: #0c0c14;
-      font-size: 0.7rem;
+    }
+
+    .hero-logo-text {
+      font-size: 0.95rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
       font-weight: 650;
     }
 
-    .pill strong {
+    .hero-logo-text span {
       color: var(--accent-strong);
-      font-weight: 600;
     }
 
-    .pill-secondary {
-      border-color: rgba(143, 216, 210, 0.55);
-      background: radial-gradient(circle at 0 0, rgba(143, 216, 210, 0.18), transparent 60%);
+    .hero-title {
+      font-size: clamp(1.4rem, 2.2vw, 1.7rem);
+      line-height: 1.35;
+      margin: 0 0 6px;
+      font-weight: 640;
     }
 
-    .pill-secondary strong {
-      color: var(--accent-alt);
+    .hero-title span {
+      color: var(--accent-strong);
     }
 
-    .pill-subtle {
-      border-color: rgba(109, 159, 255, 0.45);
-      background: radial-gradient(circle at 0 0, rgba(109, 159, 255, 0.18), transparent 60%);
+    .hero-sub {
+      font-size: 0.9rem;
+      color: var(--text-soft);
+      max-width: 540px;
+      margin: 0 auto;
     }
 
-    .pill-subtle strong {
-      color: #9fb6ff;
+    .hero-sub strong {
+      color: var(--accent-strong);
     }
 
-    .layout-main {
-      display: grid;
-      grid-template-columns: minmax(0, 3.2fr) minmax(0, 2.3fr);
-      gap: 18px;
-      align-items: stretch;
-      margin-top: 12px;
-      min-height: 380px;
-    }
-
-    @media (max-width: 880px) {
-      .layout-main {
-        grid-template-columns: minmax(0, 1fr);
-        min-height: auto;
-      }
-    }
-
-    .chat-panel {
-      position: relative;
-      border-radius: 18px;
-      background: linear-gradient(145deg, rgba(8, 9, 22, 0.98), rgba(7, 8, 20, 0.98));
-      border: 1px solid rgba(109, 108, 170, 0.55);
-      box-shadow: 0 16px 55px rgba(0, 0, 0, 0.8);
-      padding: 12px 12px 10px;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
+    .chat-card {
+      margin-top: 18px;
+      border-radius: 24px;
+      background: radial-gradient(circle at top left, #262042 0, #050509 60%);
+      border: 1px solid rgba(140, 139, 196, 0.55);
+      box-shadow: 0 18px 60px rgba(0, 0, 0, 0.8);
+      padding: 16px;
     }
 
     @media (min-width: 900px) {
-      .chat-panel {
-        padding: 14px 14px 12px;
+      .chat-card {
+        padding: 18px 18px 16px;
       }
     }
 
-    .chat-panel::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background:
-        radial-gradient(circle at top, rgba(216, 177, 90, 0.12) 0, transparent 60%),
-        radial-gradient(circle at bottom right, rgba(143, 216, 210, 0.15) 0, transparent 65%);
-      opacity: 0.85;
-      pointer-events: none;
-      z-index: -1;
+    .chat-inner {
+      border-radius: 18px;
+      background: linear-gradient(145deg, #0c0c19, #090915);
+      border: 1px solid rgba(111, 111, 180, 0.6);
+      padding: 14px 14px 12px;
     }
 
     .chat-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 8px;
       gap: 10px;
+      margin-bottom: 10px;
     }
 
     .chat-header-left {
@@ -507,20 +145,6 @@
     .chat-title {
       font-size: 0.9rem;
       font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .chat-title span.badge {
-      font-size: 0.7rem;
-      border-radius: 999px;
-      padding: 2px 8px;
-      border: 1px solid rgba(216, 177, 90, 0.65);
-      background: rgba(216, 177, 90, 0.12);
-      color: var(--accent-strong);
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
     }
 
     .chat-subtitle {
@@ -529,39 +153,28 @@
     }
 
     .chat-header-right {
+      font-size: 0.7rem;
+      color: var(--text-dim);
       display: flex;
       align-items: center;
       gap: 6px;
-      font-size: 0.74rem;
-      color: var(--text-dim);
     }
 
-    .demo-dot {
+    .dot-live {
       width: 8px;
       height: 8px;
-      border-radius: 50%;
-      background: var(--accent-strong);
-      box-shadow: 0 0 0 4px rgba(216, 177, 90, 0.32);
-    }
-
-    .demo-tag {
       border-radius: 999px;
-      padding: 3px 8px;
-      background: rgba(231, 196, 118, 0.1);
-      border: 1px solid rgba(231, 196, 118, 0.35);
-      color: var(--accent-strong);
-      text-transform: uppercase;
-      letter-spacing: 0.13em;
+      background: var(--accent-strong);
+      box-shadow: 0 0 0 4px rgba(241, 202, 99, 0.28);
     }
 
     .chat-box {
-      flex: 1;
-      min-height: 220px;
-      max-height: 340px;
       border-radius: 12px;
       padding: 10px 9px;
       background: radial-gradient(circle at top, rgba(32, 32, 64, 0.9) 0, rgba(8, 9, 20, 0.98) 42%);
       border: 1px solid rgba(84, 84, 133, 0.8);
+      min-height: 220px;
+      max-height: 340px;
       overflow-y: auto;
       box-shadow:
         inset 0 0 0 1px rgba(5, 5, 12, 0.8),
@@ -571,10 +184,6 @@
 
     .chat-box::-webkit-scrollbar {
       width: 6px;
-    }
-
-    .chat-box::-webkit-scrollbar-track {
-      background: transparent;
     }
 
     .chat-box::-webkit-scrollbar-thumb {
@@ -592,27 +201,21 @@
     }
 
     .bubble {
-      position: relative;
       max-width: 80%;
       padding: 7px 9px 7px;
       border-radius: 13px;
-      font-size: 0.78rem;
+      font-size: 0.8rem;
       line-height: 1.45;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.65);
       border: 1px solid transparent;
-      word-wrap: break-word;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.65);
       white-space: pre-wrap;
+      word-wrap: break-word;
     }
 
     .bubble-user {
       background: linear-gradient(135deg, #f1ca63, #f6e29e);
       color: #1c1407;
-      align-self: flex-end;
       border-color: rgba(115, 85, 34, 0.52);
-    }
-
-    .bubble-user strong {
-      color: #1c1407;
     }
 
     .bubble-ai {
@@ -621,29 +224,21 @@
       border-color: rgba(135, 134, 202, 0.62);
     }
 
-    .bubble-ai strong {
-      color: var(--accent-strong);
-    }
-
     .bubble-ai a {
       color: var(--accent-alt);
       text-decoration: none;
       border-bottom: 1px dotted rgba(143, 216, 210, 0.7);
     }
 
-    .bubble-ai a:hover {
-      opacity: 0.9;
-    }
-
     .bubble-label {
       font-size: 0.68rem;
       text-transform: uppercase;
-      letter-spacing: 0.15em;
+      letter-spacing: 0.14em;
       margin-bottom: 3px;
-      display: inline-flex;
+      color: var(--text-dim);
+      display: flex;
       align-items: center;
       gap: 6px;
-      color: var(--text-dim);
     }
 
     .bubble-label-dot {
@@ -657,9 +252,40 @@
       font-size: 0.66rem;
       color: var(--text-dim);
       margin-top: 2px;
+      text-align: right;
+    }
+
+    .starter-row {
+      margin-top: 8px;
+      margin-bottom: 6px;
       display: flex;
-      justify-content: flex-end;
+      flex-wrap: wrap;
       gap: 6px;
+    }
+
+    .starter-chip {
+      border-radius: 999px;
+      padding: 5px 9px;
+      font-size: 0.72rem;
+      border: 1px solid rgba(191, 190, 232, 0.46);
+      background: rgba(25, 24, 72, 0.9);
+      color: var(--text-soft);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .starter-chip:hover {
+      border-color: rgba(241, 202, 99, 0.85);
+      color: var(--accent-strong);
+    }
+
+    .starter-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
     }
 
     .input-row {
@@ -678,11 +304,11 @@
 
     #userMsg {
       width: 100%;
-      border-radius: 999px;
+      border-radius: var(--radius-pill);
       border: 1px solid rgba(124, 124, 180, 0.65);
       background: radial-gradient(circle at top left, rgba(26, 26, 52, 0.9), rgba(8, 9, 20, 0.98));
       color: var(--text-main);
-      padding: 8px 103px 8px 12px;
+      padding: 8px 100px 8px 12px;
       font-size: 0.8rem;
       outline: none;
       box-shadow:
@@ -737,7 +363,7 @@
     }
 
     #sendBtn {
-      border-radius: 999px;
+      border-radius: var(--radius-pill);
       border: none;
       padding: 0 14px;
       font-size: 0.8rem;
@@ -747,7 +373,7 @@
       background: linear-gradient(135deg, #f1ca63, #f6e29e);
       color: #21140a;
       cursor: pointer;
-      min-width: 128px;
+      min-width: 130px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -755,94 +381,11 @@
       box-shadow:
         0 8px 22px rgba(0, 0, 0, 0.75),
         0 0 0 1px rgba(0, 0, 0, 0.7);
-      position: relative;
-      overflow: hidden;
-    }
-
-    #sendBtn span.icon {
-      font-size: 0.86rem;
     }
 
     #sendBtn:disabled {
-      opacity: 0.62;
+      opacity: 0.6;
       cursor: default;
-      box-shadow:
-        0 4px 16px rgba(0, 0, 0, 0.7),
-        0 0 0 1px rgba(0, 0, 0, 0.7);
-    }
-
-    #sendBtn::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(
-        135deg,
-        rgba(255, 255, 255, 0.4),
-        rgba(255, 255, 255, 0.1),
-        transparent
-      );
-      opacity: 0;
-      transition: opacity 0.15s ease-out;
-      mix-blend-mode: screen;
-      pointer-events: none;
-    }
-
-    #sendBtn:hover:not(:disabled)::after {
-      opacity: 0.9;
-    }
-
-    .demo-note {
-      margin-top: 7px;
-      font-size: 0.72rem;
-      color: var(--text-dim);
-    }
-
-    .demo-note a {
-      color: var(--accent-strong);
-      text-decoration: none;
-    }
-
-    .hint-row {
-      margin-top: 4px;
-      font-size: 0.72rem;
-      color: var(--text-dim);
-    }
-
-    .hint-row strong {
-      color: var(--accent-strong);
-    }
-
-    .starter-row {
-      margin-top: 8px;
-      margin-bottom: 6px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-    }
-
-    .starter-chip {
-      border-radius: 999px;
-      padding: 5px 9px;
-      font-size: 0.72rem;
-      border: 1px solid rgba(191, 190, 232, 0.46);
-      background: rgba(25, 24, 72, 0.9);
-      color: var(--text-soft);
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-    }
-
-    .starter-chip:hover {
-      border-color: rgba(216, 177, 90, 0.75);
-      color: var(--accent-strong);
-    }
-
-    .starter-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: var(--accent);
     }
 
     .status-row {
@@ -865,16 +408,16 @@
       height: 7px;
       border-radius: 999px;
       background: var(--accent-strong);
-      box-shadow: 0 0 0 4px rgba(216, 177, 90, 0.28);
+      box-shadow: 0 0 0 4px rgba(241, 202, 99, 0.28);
     }
 
     .status-dot.ended {
-      background: var(--danger);
-      box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.28);
+      background: #ff6b6b;
+      box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.3);
     }
 
     #ttsToggle {
-      border-radius: 999px;
+      border-radius: var(--radius-pill);
       padding: 3px 9px;
       border: 1px solid rgba(143, 216, 210, 0.8);
       background: rgba(7, 26, 24, 0.95);
@@ -895,398 +438,43 @@
       color: var(--text-dim);
     }
 
-    .sidebar-header {
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-      margin-bottom: 10px;
-    }
-
-    .sidebar-title {
-      font-size: 0.95rem;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .badge-mini {
-      border-radius: 999px;
-      padding: 2px 7px;
-      font-size: 0.68rem;
-      text-transform: uppercase;
-      letter-spacing: 0.14em;
-      border: 1px solid rgba(216, 177, 90, 0.7);
-      background: rgba(216, 177, 90, 0.14);
-      color: var(--accent-strong);
-    }
-
-    .sidebar-sub {
-      font-size: 0.78rem;
-      color: var(--text-dim);
-      max-width: 260px;
-    }
-
-    .sidebar-sub strong {
-      color: var(--accent-strong);
-    }
-
-    .divider {
-      height: 1px;
-      background: linear-gradient(90deg, rgba(191, 190, 232, 0.1), rgba(191, 190, 232, 0.6), rgba(191, 190, 232, 0.1));
-      margin: 9px 0 10px;
-    }
-
-    .steps {
-      display: grid;
-      grid-template-columns: minmax(0, 1.5fr) minmax(0, 1.5fr);
-      gap: 8px;
-    }
-
-    @media (max-width: 980px) {
-      .steps {
-        grid-template-columns: minmax(0, 1fr);
-      }
-    }
-
-    .step-card {
-      border-radius: 14px;
-      padding: 8px 9px 9px;
-      background: radial-gradient(circle at 0 0, rgba(216, 177, 90, 0.18), transparent 75%);
-      border: 1px solid rgba(191, 190, 232, 0.55);
-      font-size: 0.76rem;
-    }
-
-    .step-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      border-radius: 999px;
-      padding: 3px 8px;
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      letter-spacing: 0.14em;
-      border: 1px solid rgba(216, 177, 90, 0.65);
-      background: rgba(216, 177, 90, 0.12);
-      color: var(--accent-strong);
-      margin-bottom: 4px;
-    }
-
-    .step-pill-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 999px;
-      background: var(--accent-strong);
-    }
-
-    .step-title {
-      font-weight: 560;
-      margin-bottom: 4px;
-    }
-
-    .step-text {
-      color: var(--text-soft);
-    }
-
-    .step-text strong {
-      color: var(--accent-strong);
-    }
-
-    .step-card.alt {
-      background: radial-gradient(circle at 0 0, rgba(143, 216, 210, 0.18), transparent 75%);
-      border-color: rgba(143, 216, 210, 0.55);
-    }
-
-    .step-card.alt .step-pill {
-      border-color: rgba(143, 216, 210, 0.8);
-      background: rgba(143, 216, 210, 0.12);
-      color: var(--accent-alt);
-    }
-
-    .step-card.alt .step-pill-dot {
-      background: var(--accent-alt);
-    }
-
-    .step-card.alt .step-text strong {
-      color: var(--accent-alt);
-    }
-
-    .metric-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 10px;
-      gap: 10px;
-    }
-
-    .metric-group {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      flex: 1;
-    }
-
-    .metric-item {
-      min-width: 120px;
-    }
-
-    .metric-label {
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      font-size: 0.65rem;
-      color: var(--text-dim);
-      margin-bottom: 4px;
-    }
-
-    .metric-value {
-      font-size: 0.9rem;
-      color: var(--text-main);
-      display: flex;
-      align-items: baseline;
-      gap: 6px;
-    }
-
-    .metric-value span.small {
-      font-size: 0.65rem;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
+    .demo-note {
+      margin-top: 6px;
+      font-size: 0.75rem;
       color: var(--text-dim);
     }
 
-    .metric-pill {
-      border-radius: 999px;
-      padding: 3px 8px;
-      border: 1px solid rgba(109, 159, 255, 0.7);
-      background: rgba(25, 47, 96, 0.9);
-      font-size: 0.7rem;
-      color: #aecdff;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .metric-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 999px;
-      background: rgba(109, 159, 255, 1);
-    }
-
-    .cta-members {
-      font-size: 0.78rem;
-      color: var(--text-dim);
-      margin-top: 10px;
-    }
-
-    .cta-members a {
+    .demo-note a {
       color: var(--accent-strong);
       text-decoration: none;
     }
 
-    .cta-members a:hover {
-      text-decoration: underline;
-    }
-
-    .badge-demo {
-      border-radius: 999px;
-      padding: 3px 8px;
-      font-size: 0.68rem;
-      text-transform: uppercase;
-      letter-spacing: 0.13em;
-      border: 1px solid rgba(191, 190, 232, 0.6);
-      color: var(--text-soft);
-      background: rgba(10, 10, 32, 0.95);
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .badge-demo-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 999px;
-      background: var(--accent-strong);
-    }
-
-    .headline-top {
-      margin-bottom: 4px;
-      font-size: 1.02rem;
-      font-weight: 600;
-    }
-
-    .headline-top span {
-      color: var(--accent-strong);
-    }
-
-    .headline-main {
-      font-size: 1.35rem;
-      line-height: 1.35;
-      margin-bottom: 4px;
-      font-weight: 650;
-    }
-
-    .headline-main span {
-      color: var(--accent-strong);
-    }
-
-    .headline-support {
-      font-size: 0.82rem;
-      color: var(--text-soft);
-    }
-
-    .top-banner {
-      margin-bottom: 14px;
-      padding: 8px 10px;
-      border-radius: 14px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      background: radial-gradient(circle at 0 0, rgba(216, 177, 90, 0.2), transparent 70%);
-      border: 1px solid rgba(191, 190, 232, 0.52);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
-    }
-
-    .top-banner-icon {
-      width: 32px;
-      height: 32px;
-      border-radius: 999px;
-      background: radial-gradient(circle at 30% 0, rgba(248, 222, 145, 1) 0, #f1ca63 30%, #8c46ff 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.7);
-      color: #1d1307;
-    }
-
-    .top-banner-text {
-      font-size: 0.8rem;
-      color: var(--text-soft);
-    }
-
-    .top-banner-text strong {
-      color: var(--accent-strong);
-    }
-
-    .top-banner-kicker {
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      letter-spacing: 0.16em;
-      color: var(--text-dim);
-      margin-bottom: 2px;
-    }
-
-    .app-shell-outer {
-      width: 100%;
-      max-width: 1120px;
-    }
-
-    .hero-block {
-      padding: 10px 0 16px;
-      text-align: center;
-    }
-
-    .hero-logo {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 6px;
-    }
-
-    .hero-logo-mark {
-      width: 40px;
-      height: 40px;
-      border-radius: 999px;
-      background: radial-gradient(circle at 30% 0, #f8e089 0, #f1c967 18%, #8c46ff 52%, #32127b 90%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow:
-        0 0 0 1px rgba(0, 0, 0, 0.8),
-        0 10px 30px rgba(0, 0, 0, 0.75);
-    }
-
-    .hero-logo-mark svg {
-      width: 24px;
-      height: 24px;
-    }
-
-    .hero-logo-text {
-      font-size: 1rem;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      font-weight: 650;
-    }
-
-    .hero-logo-text span {
-      color: var(--accent-strong);
-    }
-
-    .hero-headline {
-      font-size: clamp(1.5rem, 2.3vw, 1.8rem);
-      line-height: 1.35;
-      margin: 4px 0 6px;
-      font-weight: 620;
-    }
-
-    .hero-headline span {
-      color: var(--accent-strong);
-    }
-
-    .hero-sub {
-      font-size: 0.9rem;
-      color: var(--text-soft);
-      max-width: 540px;
-      margin: 0 auto;
-    }
-
-    .hero-sub strong {
-      color: var(--accent-strong);
-    }
-
     @media (max-width: 720px) {
       body {
-        padding: 14px 8px 28px;
+        padding: 16px 8px 28px;
       }
 
-      .card-main {
-        padding: 14px 12px 12px;
-      }
-
-      .card-main-inner {
-        padding: 14px 12px 12px;
-      }
-
-      .card-sidebar {
-        padding: 12px 12px 10px;
-      }
-
-      .sidebar-inner {
-        padding: 12px 11px 10px;
-      }
-
-      .hero-headline {
-        font-size: 1.3rem;
+      .chat-card {
+        margin-top: 14px;
       }
     }
   </style>
 </head>
 <body>
-  <div class="bg-overlay"></div>
-
-  <div class="app-shell-outer">
-    <div class="hero-block">
+  <div class="app">
+    <header class="hero">
       <div class="hero-logo">
         <div class="hero-logo-mark">
           <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
             <defs>
-              <linearGradient id="gradEsteborg" x1="0" y1="0" x2="1" y2="1">
+              <linearGradient id="gradHero" x1="0" y1="0" x2="1" y2="1">
                 <stop offset="0%" stop-color="#f9e6a9"/>
                 <stop offset="35%" stop-color="#f1c45d"/>
                 <stop offset="70%" stop-color="#b37cff"/>
                 <stop offset="100%" stop-color="#2c0f63"/>
               </linearGradient>
             </defs>
-            <circle cx="20" cy="20" r="18" fill="url(#gradEsteborg)" />
+            <circle cx="20" cy="20" r="18" fill="url(#gradHero)" />
             <path d="M14 10c3.5 0 6 3.2 6 7.5S17.5 25 14 25 8 21.8 8 17.5 10.5 10 14 10Z" fill="rgba(12,8,24,0.96)"/>
             <path d="M26 13c2.4 0 4.2 1.9 4.2 4.5S28.4 22 26 22s-4.2-1.9-4.2-4.5S23.6 13 26 13Z" fill="rgba(12,8,24,0.96)"/>
             <path d="M18 13h3.5M18 16h3.5M18 19h3.5M18 22h3.5" stroke="#f9e6a9" stroke-width="1.2" stroke-linecap="round" />
@@ -1294,346 +482,109 @@
         </div>
         <div class="hero-logo-text">ESTEBORG <span>EXECUTIVE</span></div>
       </div>
-      <div class="hero-headline">
-        ¿Tu comunicación está frenando tu crecimiento profesional?<br/>
+      <h1 class="hero-title">
+        ¿Tu comunicación está frenando tu crecimiento profesional?<br />
         <span>Haz el Mini Diagnóstico Esteborg y descúbrelo en 2 minutos.</span>
-      </div>
-      <div class="hero-sub">
-        Un ejercicio guiado por Esteborg, tu entrenador ejecutivo de <strong>comunicación emocional</strong>,
-        <strong>liderazgo</strong> y <strong>claridad mental</strong>.
-      </div>
-    </div>
+      </h1>
+      <p class="hero-sub">
+        Un ejercicio guiado por Esteborg, tu entrenador ejecutivo de
+        <strong>comunicación emocional</strong>, <strong>liderazgo</strong> y
+        <strong>claridad mental</strong>.
+      </p>
+    </header>
 
-    <div class="app-shell">
-      <div class="card-main">
-        <div class="card-main-inner">
-          <div class="logo-row">
-            <div class="logo-group">
-              <div class="logo-mark">
-                <div class="logo-mark-inner">
-                  <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
-                    <defs>
-                      <linearGradient id="grad2" x1="0" y1="0" x2="1" y2="1">
-                        <stop offset="0%" stop-color="#f9e6a9"/>
-                        <stop offset="35%" stop-color="#f1c45d"/>
-                        <stop offset="70%" stop-color="#b37cff"/>
-                        <stop offset="100%" stop-color="#2c0f63"/>
-                      </linearGradient>
-                    </defs>
-                    <circle cx="20" cy="20" r="18" fill="url(#grad2)" />
-                    <path d="M14 10c3.5 0 6 3.2 6 7.5S17.5 25 14 25 8 21.8 8 17.5 10.5 10 14 10Z" fill="rgba(12,8,24,0.96)"/>
-                    <path d="M26 13c2.4 0 4.2 1.9 4.2 4.5S28.4 22 26 22s-4.2-1.9-4.2-4.5S23.6 13 26 13Z" fill="rgba(12,8,24,0.96)"/>
-                    <path d="M18 13h3.5M18 16h3.5M18 19h3.5M18 22h3.5" stroke="#f9e6a9" stroke-width="1.2" stroke-linecap="round" />
-                  </svg>
-                </div>
+    <main class="chat-card">
+      <div class="chat-inner">
+        <div class="chat-header">
+          <div class="chat-header-left">
+            <div class="chat-title">Mini Diagnóstico · Comunicación con Esteborg</div>
+            <div class="chat-subtitle">
+              Responde como si hablaras con tu coach. Entre más claro seas, mejor el diagnóstico.
+            </div>
+          </div>
+          <div class="chat-header-right">
+            <span class="dot-live"></span>
+            <span>Demo guiada</span>
+          </div>
+        </div>
+
+        <div id="chatBox" class="chat-box">
+          <div class="msg-row">
+            <div class="bubble bubble-ai">
+              <div class="bubble-label">
+                <span class="bubble-label-dot"></span>
+                <span>Esteborg</span>
               </div>
-              <div class="logo-text-block">
-                <div class="logo-title">
-                  <span>ESTEBORG</span>
-                  <span class="accent">COACH</span>
-                </div>
-                <div class="logo-subtitle">Tu mente es tu ventaja</div>
-              </div>
-            </div>
-            <div class="logo-tag">
-              <div class="logo-tag-dot"></div>
-              <span>Demo guiada en tiempo real</span>
-            </div>
-          </div>
-
-          <div class="headline">
-            <div class="headline-kicker">
-              MINI DIAGNÓSTICO DE COMUNICACIÓN
-            </div>
-            <h1 class="headline-title">
-              Descubre en qué estás saboteando tu comunicación en <span>3 pasos</span>.
-            </h1>
-            <p class="headline-subtitle">
-              Esta demo te da una primera lectura sobre <strong>cómo te comunicas hoy</strong> y
-              dónde puedes mejorar como líder, vendedor o profesional. Si quieres trabajar a fondo, Esteborg te espera en
-              <a href="https://membersvip.esteborg.live" target="_blank" rel="noopener noreferrer">Members VIP</a>.
-            </p>
-          </div>
-
-          <div class="pill-row">
-            <div class="pill">
-              <div class="pill-icon">1</div>
-              <span><strong>Habla con Esteborg</strong> sobre tu reto actual.</span>
-            </div>
-            <div class="pill pill-secondary">
-              <div class="pill-icon">2</div>
-              <span><strong>Recibe una lectura</strong> de tu comunicación.</span>
-            </div>
-            <div class="pill pill-subtle">
-              <div class="pill-icon">3</div>
-              <span><strong>Descubre el siguiente paso</strong> para entrenarte a fondo.</span>
-            </div>
-          </div>
-
-          <div class="top-banner">
-            <div class="top-banner-icon">
-              <span>⚡</span>
-            </div>
-            <div class="top-banner-text">
-              <div class="top-banner-kicker">Cómo funciona</div>
               <div>
-                Esta demo es <strong>gratuita y limitada</strong>. Cuando llegues al final, Esteborg te invitará a seguir
-                en Members VIP con el entrenamiento completo de comunicación, liderazgo y claridad mental.
+                Antes de entrar a tu mini diagnóstico, dime:
+                <strong>¿en qué idioma quieres que conversemos?</strong>
+                Escribe <strong>"español"</strong> o <strong>"inglés"</strong>.
               </div>
-            </div>
-          </div>
-
-          <div class="layout-main">
-            <div class="chat-panel">
-              <div class="chat-header">
-                <div class="chat-header-left">
-                  <div class="chat-title">
-                    Esteborg · Comunicación Ejecutiva
-                    <span class="badge">Demo guiada</span>
-                  </div>
-                  <div class="chat-subtitle">
-                    Responde como si hablaras con tu entrenador personal. Entre más claro seas, mejor el diagnóstico.
-                  </div>
-                </div>
-                <div class="chat-header-right">
-                  <span class="demo-dot"></span>
-                  <span>Tiempo real</span>
-                </div>
-              </div>
-
-              <div id="chatBox" class="chat-box">
-                <div class="msg-row">
-                  <div class="bubble bubble-ai">
-                    <div class="bubble-label">
-                      <span class="bubble-label-dot"></span>
-                      <span>Esteborg</span>
-                    </div>
-                    <div>
-                      Antes de entrar de lleno a tu mini diagnóstico, dime:
-                      <strong>¿en qué idioma quieres que conversemos?</strong> Escribe
-                      <strong>"español"</strong> o <strong>"inglés"</strong>.
-                    </div>
-                    <div class="bubble-meta">
-                      <span>Demo · Paso 1/3</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="starter-row" id="startersRow">
-                <button class="starter-chip" data-starter="Quiero comunicarme mejor con mi equipo.">
-                  <span class="starter-dot"></span>
-                  <span>Quiero comunicarme mejor con mi equipo.</span>
-                </button>
-                <button class="starter-chip" data-starter="Quiero más claridad mental para tomar decisiones importantes.">
-                  <span class="starter-dot"></span>
-                  <span>Quiero más claridad mental para decidir.</span>
-                </button>
-                <button class="starter-chip" data-starter="Quiero comunicarme mejor con clientes o prospectos.">
-                  <span class="starter-dot"></span>
-                  <span>Quiero comunicarme mejor con clientes.</span>
-                </button>
-              </div>
-
-              <div class="input-row">
-                <div class="input-wrapper">
-                  <input
-                    id="userMsg"
-                    type="text"
-                    placeholder='Ej. "Quiero comunicarme mejor con mi equipo remoto..."'
-                    autocomplete="off"
-                  />
-                  <button class="mic-btn" id="micBtn" type="button" title="Hablar con tu voz">
-                    <svg viewBox="0 0 24 24">
-                      <path
-                        d="M12 4a2 2 0 0 0-2 2v4a2 2 0 1 0 4 0V6a2 2 0 0 0-2-2Zm-4 6a4 4 0 1 0 8 0h-1.5a2.5 2.5 0 1 1-5 0H8Z"
-                        fill="currentColor"
-                      />
-                      <path
-                        d="M11 15.95V19h2v-3.05a6.002 6.002 0 0 0 5-5.9h-2a4 4 0 1 1-8 0H6a6.002 6.002 0 0 0 5 5.9Z"
-                        fill="currentColor"
-                      />
-                    </svg>
-                  </button>
-                </div>
-                <button id="sendBtn" type="button">
-                  <span class="icon">➤</span>
-                  <span>Enviar a Esteborg</span>
-                </button>
-              </div>
-
-              <div class="status-row">
-                <div id="demoStatus">
-                  <span class="status-dot"></span>
-                  <span>Demo activa · primeras interacciones</span>
-                </div>
-                <button id="ttsToggle" type="button">
-                  <span>🔊 Voz Esteborg</span>
-                </button>
-              </div>
-
-              <div class="demo-note">
-                Esta demo está limitada. Cuando llegue al final, Esteborg te invitará a continuar en
-                <a href="https://membersvip.esteborg.live" target="_blank" rel="noopener noreferrer">Members VIP</a>
-                con el entrenamiento completo.
-              </div>
-            </div>
-
-            <div class="sidebar">
-              <div class="card-sidebar">
-                <div class="sidebar-inner">
-                  <div class="sidebar-header">
-                    <div class="badge-mini">
-                      <span class="badge-demo-dot"></span>
-                      <span>Qué vas a experimentar</span>
-                    </div>
-                    <div class="sidebar-title">
-                      Esteborg en modo demo de comunicación.
-                    </div>
-                    <div class="sidebar-sub">
-                      Esta versión demo se enfoca en <strong>cómo te comunicas hoy</strong> y qué podrías ajustar para
-                      tener más impacto al hablar con tu equipo, clientes o líderes.
-                    </div>
-                  </div>
-
-                  <div class="divider"></div>
-
-                  <div class="steps">
-                    <div class="step-card">
-                      <div class="step-pill">
-                        <div class="step-pill-dot"></div>
-                        <span>Paso 1 · Lenguaje y contexto</span>
-                      </div>
-                      <div class="step-title">Elegimos idioma y entendemos tu reto.</div>
-                      <div class="step-text">
-                        Esteborg te hará una o dos preguntas simples para ubicar
-                        <strong>dónde estás</strong>: comunicación con tu equipo, con clientes o contigo mismo.
-                      </div>
-                    </div>
-                    <div class="step-card alt">
-                      <div class="step-pill">
-                        <div class="step-pill-dot"></div>
-                        <span>Paso 2 · Micro diagnóstico</span>
-                      </div>
-                      <div class="step-title">Te da una primera lectura accionable.</div>
-                      <div class="step-text">
-                        Recibes una <strong>perspectiva clara y directa</strong> sobre patrones que podrían estar
-                        frenando tu comunicación y un siguiente paso concreto.
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="metric-row">
-                    <div class="metric-group">
-                      <div class="metric-item">
-                        <div class="metric-label">Duración</div>
-                        <div class="metric-value">
-                          <span>2–4 minutos</span>
-                          <span class="small">por demo</span>
-                        </div>
-                      </div>
-                      <div class="metric-item">
-                        <div class="metric-label">Enfoque</div>
-                        <div class="metric-value">
-                          <span>Comunicación, liderazgo, claridad</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div>
-                      <div class="metric-label">Modo completo</div>
-                      <div class="metric-pill">
-                        <span class="metric-dot"></span>
-                        <span>Disponible en Members VIP</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="cta-members">
-                    ¿Quieres que Esteborg te acompañe varios días seguidos? Pruébalo en modo completo en
-                    <a href="https://membersvip.esteborg.live" target="_blank" rel="noopener noreferrer">
-                      Members VIP
-                    </a>.
-                  </div>
-                </div>
-              </div>
+              <div class="bubble-meta">Paso 1 de 3</div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div class="card-sidebar">
-        <div class="sidebar-inner">
-          <div class="headline-top">
-            Mini Diagnóstico · <span>Comunicación, liderazgo y claridad</span>
-          </div>
-          <div class="headline-main">
-            En 2 minutos Esteborg te da una lectura sincera sobre <span>cómo te estás comunicando hoy</span>.
-          </div>
-          <div class="headline-support">
-            No es terapia, no es coaching infinito. Es un espejo ejecutivo para que veas en qué estás
-            <strong>perdiendo impacto al hablar</strong> con tu equipo, tus clientes o tus líderes.
-          </div>
-
-          <div class="divider" style="margin-top: 12px;"></div>
-
-          <div class="steps">
-            <div class="step-card">
-              <div class="step-pill">
-                <div class="step-pill-dot"></div>
-                <span>¿Para quién es?</span>
-              </div>
-              <div class="step-title">Líderes, vendedores y profesionales con responsabilidad.</div>
-              <div class="step-text">
-                Personas que ya tienen <strong>cierto nivel</strong>, pero sienten que su forma de comunicar frena su
-                crecimiento, sus ventas o su autoridad.
-              </div>
-            </div>
-
-            <div class="step-card alt">
-              <div class="step-pill">
-                <div class="step-pill-dot"></div>
-                <span>Qué NO hace</span>
-              </div>
-              <div class="step-title">No reemplaza procesos profundos.</div>
-              <div class="step-text">
-                No es terapia ni consultoría legal. Es un <strong>inicio</strong> para que tomes consciencia y decidas
-                si quieres entrenarte a profundidad con Esteborg.
-              </div>
-            </div>
-          </div>
-
-          <div class="metric-row" style="margin-top: 12px;">
-            <div class="metric-group">
-              <div class="metric-item">
-                <div class="metric-label">Formato</div>
-                <div class="metric-value">
-                  <span>Chat guiado + voz</span>
-                </div>
-              </div>
-              <div class="metric-item">
-                <div class="metric-label">Interacciones</div>
-                <div class="metric-value">
-                  <span>Demo limitada</span>
-                  <span class="small">hasta 14 turnos</span>
-                </div>
-              </div>
-            </div>
-            <div>
-              <div class="metric-label">Siguiente paso</div>
-              <div class="metric-pill">
-                <span class="metric-dot"></span>
-                <span>Entrar a Members VIP</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="cta-members" style="margin-top: 12px;">
-            Esta demo te mostrará solo una parte de lo que Esteborg puede hacer contigo. Si al final sientes que te habló
-            directo, el siguiente paso natural es <strong>activar tu acceso a Members VIP</strong>.
-          </div>
+        <div class="starter-row" id="startersRow">
+          <button class="starter-chip" data-starter="Quiero comunicarme mejor con mi equipo.">
+            <span class="starter-dot"></span>
+            <span>Quiero comunicarme mejor con mi equipo.</span>
+          </button>
+          <button class="starter-chip" data-starter="Quiero más claridad mental para tomar decisiones importantes.">
+            <span class="starter-dot"></span>
+            <span>Quiero más claridad mental para decidir.</span>
+          </button>
+          <button class="starter-chip" data-starter="Quiero comunicarme mejor con clientes o prospectos.">
+            <span class="starter-dot"></span>
+            <span>Quiero comunicarme mejor con clientes.</span>
+          </button>
         </div>
+
+        <div class="input-row">
+          <div class="input-wrapper">
+            <input
+              id="userMsg"
+              type="text"
+              placeholder='Escribe aquí...'
+              autocomplete="off"
+            />
+            <button class="mic-btn" id="micBtn" type="button" title="Hablar con tu voz">
+              <svg viewBox="0 0 24 24">
+                <path
+                  d="M12 4a2 2 0 0 0-2 2v4a2 2 0 1 0 4 0V6a2 2 0 0 0-2-2Zm-4 6a4 4 0 1 0 8 0h-1.5a2.5 2.5 0 1 1-5 0H8Z"
+                  fill="currentColor"
+                />
+                <path
+                  d="M11 15.95V19h2v-3.05a6.002 6.002 0 0 0 5-5.9h-2a4 4 0 1 1-8 0H6a6.002 6.002 0 0 0 5 5.9Z"
+                  fill="currentColor"
+                />
+              </svg>
+            </button>
+          </div>
+          <button id="sendBtn" type="button">
+            <span>Enviar a Esteborg</span>
+          </button>
+        </div>
+
+        <div class="status-row">
+          <div id="demoStatus">
+            <span class="status-dot"></span>
+            <span>Demo activa · primeras interacciones</span>
+          </div>
+          <button id="ttsToggle" type="button">
+            🔊 Voz Esteborg
+          </button>
+        </div>
+
+        <p class="demo-note">
+          Esta demo es gratuita y limitada. Cuando llegue al final, Esteborg te invitará a continuar en
+          <a href="https://membersvip.esteborg.live" target="_blank" rel="noopener noreferrer">
+            Members VIP
+          </a>
+          con el entrenamiento completo.
+        </p>
       </div>
-    </div>
+    </main>
   </div>
 
   <script>
@@ -1645,6 +596,7 @@
     const demoStatusEl = doc.getElementById("demoStatus");
     const ttsToggleBtn = doc.getElementById("ttsToggle");
     const micBtn = doc.getElementById("micBtn");
+    const startersRow = doc.getElementById("startersRow");
 
     const API_URL = "https://esteborgcom7-backend.onrender.com/api/demo/welcome";
 
@@ -1652,40 +604,12 @@
     let isSending = false;
     let demoEnded = false;
     let userName = null;
-
-    // 1 = idioma, 2 = nombre, 3 = conversación normal
-    let introStep = 1;
-
-    let currentLang = "es"; // "es" o "en"
+    let introStep = 1; // 1 idioma, 2 nombre, 3 conversación
+    let currentLang = "es";
     let ttsEnabled = true;
     let currentAudio = null;
 
-    const startersRow = doc.getElementById("startersRow");
-    if (startersRow) {
-      startersRow.querySelectorAll(".starter-chip").forEach((chip) => {
-        chip.addEventListener("click", () => handleStarterClick(chip));
-      });
-    }
-
-    function handleStarterClick(chip) {
-      if (!chip) return;
-      if (demoEnded || isSending) return;
-
-      const val = chip.getAttribute("data-starter") || chip.textContent || "";
-      if (!val.trim()) return;
-
-      if (introStep < 3) {
-        appendMessage(
-          "assistant",
-          "Primero terminemos las preguntas iniciales de idioma y nombre, luego podemos usar tus retos como ejemplo."
-        );
-        return;
-      }
-
-      userMsgInput.value = val;
-      sendMessage();
-    }
-
+    // ----- Helpers UI -----
     function formatTextWithLinks(text) {
       if (!text) return "";
       const urlRegex =
@@ -1716,12 +640,7 @@
       const dot = doc.createElement("span");
       dot.className = "bubble-label-dot";
       const who = doc.createElement("span");
-
-      if (role === "user") {
-        who.textContent = userName ? userName : "Tú";
-      } else {
-        who.textContent = "Esteborg";
-      }
+      who.textContent = role === "user" ? (userName || "Tú") : "Esteborg";
 
       label.appendChild(dot);
       label.appendChild(who);
@@ -1753,14 +672,11 @@
 
     function updateDemoStatus(text, ended) {
       if (!demoStatusEl) return;
-
       demoStatusEl.innerHTML = "";
 
       const dot = doc.createElement("span");
       dot.className = "status-dot";
-      if (ended) {
-        dot.classList.add("ended");
-      }
+      if (ended) dot.classList.add("ended");
 
       const label = doc.createElement("span");
       label.textContent = text;
@@ -1771,7 +687,7 @@
 
     function setDemoStatus(status, remaining) {
       if (status === "ended") {
-        updateDemoStatus("Demo finalizada · activa tu acceso en Members VIP", true);
+        updateDemoStatus("Demo finalizada · entra a Members VIP para seguir", true);
         demoEnded = true;
         sendBtn.disabled = true;
         userMsgInput.disabled = true;
@@ -1780,7 +696,7 @@
 
       if (typeof remaining === "number") {
         if (remaining <= 0) {
-          updateDemoStatus("Demo finalizada · activa tu acceso en Members VIP", true);
+          updateDemoStatus("Demo finalizada · entra a Members VIP para seguir", true);
           demoEnded = true;
           sendBtn.disabled = true;
           userMsgInput.disabled = true;
@@ -1796,26 +712,23 @@
 
     function detectLangChoice(message) {
       const text = (message || "").toLowerCase();
-
-      if (text.includes("english") || text.includes("inglés") || text.includes("ingles")) {
-        return "en";
-      }
-
-      if (text.includes("spanish") || text.includes("español") || text.includes("espanol")) {
-        return "es";
-      }
-
-      if (text.includes("en") && text.includes("english")) return "en";
-      if (text.includes("es") && text.includes("español")) return "es";
-
+      if (text.includes("english") || text.includes("inglés") || text.includes("ingles")) return "en";
+      if (text.includes("spanish") || text.includes("español") || text.includes("espanol")) return "es";
       return currentLang || "es";
     }
 
     function formatLangForBackend(lang) {
-      if ((lang || "").toLowerCase().startsWith("en")) return "en";
-      return "es";
+      return (lang || "").toLowerCase().startsWith("en") ? "en" : "es";
     }
 
+    function setLoading(isLoading) {
+      isSending = isLoading;
+      sendBtn.disabled = isLoading || demoEnded;
+      userMsgInput.disabled = demoEnded;
+      sendBtn.textContent = isLoading ? "Pensando..." : "Enviar a Esteborg";
+    }
+
+    // ----- TTS ElevenLabs -----
     async function speakFromApi(text) {
       if (!ttsEnabled || !text) return;
 
@@ -1840,9 +753,7 @@
           try {
             currentAudio.pause();
             currentAudio.currentTime = 0;
-          } catch (e) {
-            console.warn("Error al detener audio previo:", e);
-          }
+          } catch {}
         }
 
         currentAudio = new Audio(url);
@@ -1852,46 +763,33 @@
       }
     }
 
-    function setLoading(isLoading) {
-      isSending = isLoading;
-      sendBtn.disabled = isLoading || demoEnded;
-      userMsgInput.disabled = demoEnded;
-
-      if (isLoading) {
-        sendBtn.innerHTML = '<span class="icon">⏳</span><span>Pensando...</span>';
-      } else {
-        sendBtn.innerHTML = '<span class="icon">➤</span><span>Enviar a Esteborg</span>';
-      }
-    }
-
+    // ----- Envío de mensaje -----
     async function sendMessage() {
       if (isSending || demoEnded) return;
-
-      const message = userMsgInput.value.trim();
+      const message = (userMsgInput.value || "").trim();
       if (!message) return;
 
       appendMessage("user", message);
       userMsgInput.value = "";
 
+      // Paso 1: idioma
       if (introStep === 1) {
         currentLang = detectLangChoice(message);
-        const langLabel = currentLang === "en" ? "en inglés" : "en español";
-
         const reply =
           currentLang === "en"
-            ? `Perfect. We'll talk in English. What's your first name?`
-            : `Perfecto. Hablaremos ${langLabel}. ¿Cómo te llamas?`;
-
+            ? "Perfect. We'll talk in English. What's your first name?"
+            : "Perfecto. Hablaremos en español. ¿Cómo te llamas?";
         introStep = 2;
-        appendMessage("assistant", reply, "Demo · Paso 2/3");
+        appendMessage("assistant", reply, "Paso 2 de 3");
         return;
       }
 
+      // Paso 2: nombre
       if (introStep === 2) {
         userName = message
           .split(" ")
           .map((p) => p.trim())
-          .filter((p) => p)
+          .filter(Boolean)
           .slice(0, 2)
           .join(" ");
 
@@ -1899,12 +797,12 @@
           currentLang === "en"
             ? `Thanks, ${userName}. Now tell me in one sentence what you want to improve first: your communication, your leadership or your mental clarity.`
             : `Gracias, ${userName}. Ahora dime en una sola frase qué quieres mejorar primero: tu comunicación, tu liderazgo o tu claridad mental.`;
-
         introStep = 3;
-        appendMessage("assistant", reply, "Demo · Paso 3/3");
+        appendMessage("assistant", reply, "Paso 3 de 3");
         return;
       }
 
+      // Paso 3+: backend
       setLoading(true);
 
       try {
@@ -1917,9 +815,7 @@
 
         const res = await fetch(API_URL, {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
         });
 
@@ -1941,19 +837,11 @@
           history.push({ role: "assistant", content: data.reply });
 
           if (data.demoStatus) {
-            const remaining = typeof data.remainingInteractions === "number"
-              ? data.remainingInteractions
-              : null;
-
-            if (data.demoStatus === "ended") {
-              setDemoStatus("ended", 0);
-            } else {
-              if (remaining !== null && remaining <= 3) {
-                setDemoStatus("active", remaining);
-              } else {
-                setDemoStatus("active", remaining);
-              }
-            }
+            const remaining =
+              typeof data.remainingInteractions === "number"
+                ? data.remainingInteractions
+                : null;
+            setDemoStatus(data.demoStatus, remaining);
           }
         } else {
           const fallbackMsg =
@@ -1974,8 +862,8 @@
       }
     }
 
+    // ----- Eventos -----
     sendBtn.addEventListener("click", () => sendMessage());
-
     userMsgInput.addEventListener("keydown", (e) => {
       if (e.key === "Enter" && !e.shiftKey) {
         e.preventDefault();
@@ -1983,66 +871,78 @@
       }
     });
 
+    if (startersRow) {
+      startersRow.querySelectorAll(".starter-chip").forEach((chip) => {
+        chip.addEventListener("click", () => {
+          if (demoEnded || isSending) return;
+          const val = chip.getAttribute("data-starter") || chip.textContent || "";
+          if (!val.trim()) return;
+
+          if (introStep < 3) {
+            appendMessage(
+              "assistant",
+              "Primero terminemos idioma y nombre, luego usamos tus retos como ejemplo."
+            );
+            return;
+          }
+
+          userMsgInput.value = val;
+          sendMessage();
+        });
+      });
+    }
+
     ttsToggleBtn.addEventListener("click", () => {
       ttsEnabled = !ttsEnabled;
       if (ttsEnabled) {
         ttsToggleBtn.classList.remove("off");
-        ttsToggleBtn.innerHTML = "<span>🔊 Voz Esteborg</span>";
+        ttsToggleBtn.textContent = "🔊 Voz Esteborg";
       } else {
         ttsToggleBtn.classList.add("off");
-        ttsToggleBtn.innerHTML = "<span>🔇 Voz desactivada</span>";
+        ttsToggleBtn.textContent = "🔇 Voz desactivada";
         if (currentAudio) {
           try {
             currentAudio.pause();
             currentAudio.currentTime = 0;
-          } catch (e) {
-            console.warn("Error al detener audio:", e);
-          }
+          } catch {}
         }
       }
     });
 
+    // ----- Voz de entrada (opcional) -----
     function setupVoiceInput() {
       if (!("webkitSpeechRecognition" in window) && !("SpeechRecognition" in window)) {
-        if (micBtn) {
-          micBtn.style.display = "none";
-        }
+        if (micBtn) micBtn.style.display = "none";
         return;
       }
 
       const SpeechRecognition =
         window.SpeechRecognition || window.webkitSpeechRecognition;
       const recognition = new SpeechRecognition();
-
       recognition.lang = "es-MX";
       recognition.continuous = false;
       recognition.interimResults = false;
 
       let isRecording = false;
 
-      function updateMicState(recording) {
-        isRecording = recording;
-        if (micBtn) {
-          if (recording) {
-            micBtn.classList.add("recording");
-          } else {
-            micBtn.classList.remove("recording");
-          }
-        }
+      function setRecording(r) {
+        isRecording = r;
+        if (!micBtn) return;
+        if (r) micBtn.classList.add("recording");
+        else micBtn.classList.remove("recording");
       }
 
       if (micBtn) {
         micBtn.addEventListener("click", () => {
           if (isRecording) {
             recognition.stop();
-            updateMicState(false);
+            setRecording(false);
           } else {
             try {
               recognition.start();
-              updateMicState(true);
+              setRecording(true);
             } catch (e) {
               console.warn("Error al iniciar reconocimiento de voz:", e);
-              updateMicState(false);
             }
           }
         });
@@ -2053,22 +953,11 @@
         userMsgInput.value = transcript;
       };
 
-      recognition.onerror = () => {
-        updateMicState(false);
-      };
-
-      recognition.onend = () => {
-        updateMicState(false);
-      };
+      recognition.onerror = () => setRecording(false);
+      recognition.onend = () => setRecording(false);
     }
 
     setupVoiceInput();
-    renderStarters();
-
-    function renderStarters() {
-      // ya se instancian arriba con data-starter, esta función queda
-      // por compatibilidad si quieres agregar dinámicamente más chips
-    }
   </script>
 </body>
 </html>
